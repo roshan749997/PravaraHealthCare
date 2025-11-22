@@ -555,47 +555,6 @@ export default function Dashboard() {
 
                 {/* Callout Boxes with Connecting Lines */}
                 <div className="relative flex-1 w-full lg:min-w-0 lg:max-w-full">
-                  {/* SVG Container for connecting lines (desktop only) */}
-                  <svg
-                    className="absolute hidden lg:block pointer-events-none overflow-visible"
-                    style={{
-                      left: '-200px',
-                      top: '50%',
-                      width: '600px',
-                      height: '400px',
-                      transform: 'translateY(-50%)',
-                      zIndex: 0,
-                    }}
-                  >
-                    {revenueByCategory.map((item, index) => {
-                      const totalAngle = 360;
-                      const startAngle = 90;
-                      const cumulativeAngle = revenueByCategory
-                        .slice(0, index)
-                        .reduce((sum, item) => sum + (item.value / 100) * totalAngle, 0);
-                      const midAngle = startAngle - cumulativeAngle - (item.value / 100) * totalAngle / 2;
-                      const angleRad = (midAngle * Math.PI) / 180;
-                      const radius = 130;
-                      const x1 = 200 + Math.cos(angleRad) * radius;
-                      const y1 = 200 + Math.sin(angleRad) * radius;
-                      const x2 = 400;
-                      const y2 = 50 + index * 80;
-                      
-                      return (
-                        <line
-                          key={`revenue-line-${index}`}
-                          x1={x1}
-                          y1={y1}
-                          x2={x2}
-                          y2={y2}
-                          stroke={item.color}
-                          strokeWidth="2"
-                          strokeDasharray="4 4"
-                          opacity="0.5"
-                        />
-                      );
-                    })}
-                  </svg>
                   
                   {/* Callout Boxes - Scrollable Container */}
                   <div className="relative z-10 w-full lg:max-h-[calc(100vh-200px)] lg:overflow-y-auto lg:overflow-x-visible lg:pr-4 lg:pl-2 custom-scrollbar">
@@ -1266,47 +1225,6 @@ export default function Dashboard() {
 
                 {/* Callout Boxes with Connecting Lines */}
                 <div className="relative flex-1 w-full lg:min-w-0 lg:max-w-full">
-                  {/* SVG Container for connecting lines (desktop only) */}
-                  <svg
-                    className="absolute hidden lg:block pointer-events-none overflow-visible"
-                    style={{
-                      left: '-200px',
-                      top: '50%',
-                      width: '600px',
-                      height: '400px',
-                      transform: 'translateY(-50%)',
-                      zIndex: 0,
-                    }}
-                  >
-                    {departmentDistribution.map((dept, index) => {
-                      const totalAngle = 360;
-                      const startAngle = 90;
-                      const cumulativeAngle = departmentDistribution
-                        .slice(0, index)
-                        .reduce((sum, item) => sum + (item.value / 100) * totalAngle, 0);
-                      const midAngle = startAngle - cumulativeAngle - (dept.value / 100) * totalAngle / 2;
-                      const angleRad = (midAngle * Math.PI) / 180;
-                      const radius = 130;
-                      const x1 = 200 + Math.cos(angleRad) * radius;
-                      const y1 = 200 + Math.sin(angleRad) * radius;
-                      const x2 = 400;
-                      const y2 = 50 + index * 80;
-                      
-                      return (
-                        <line
-                          key={`line-${index}`}
-                          x1={x1}
-                          y1={y1}
-                          x2={x2}
-                          y2={y2}
-                          stroke={dept.color}
-                          strokeWidth="2"
-                          strokeDasharray="4 4"
-                          opacity="0.5"
-                        />
-                      );
-                    })}
-                  </svg>
                   
                   {/* Callout Boxes - Scrollable Container */}
                   <div className="relative z-10 w-full lg:max-h-[calc(100vh-200px)] lg:overflow-y-auto lg:overflow-x-visible lg:pr-4 lg:pl-2 custom-scrollbar">
