@@ -40,6 +40,18 @@ const kpiCards = [
       </svg>
     ),
   },
+  {
+    title: "Open Positions",
+    value: "5",
+    helper: "2 critical roles",
+    badge: "Active",
+    color: "#06B6D4", // Cyan - Employee Distribution color
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 .414-.336.75-.75.75h-4.5a.75.75 0 0 1-.75-.75v-4.25m0 0h4.5m-4.5 0-3 3m3-3 3-3m-3 3h4.5m0 0v4.25a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1-.75-.75v-4.25" />
+      </svg>
+    ),
+  },
 ];
 
 const overviewStats = [
@@ -165,6 +177,12 @@ const highlightCards = [
     description: "On track to meet quarterly objective with current pipeline mix.",
     color: "bg-[#D400FF]",
   },
+  {
+    title: "Retention Rate",
+    value: "92%",
+    description: "High employee satisfaction and retention across all departments.",
+    color: "bg-[#10B981]",
+  },
 ];
 
 export default function Dashboard() {
@@ -188,7 +206,7 @@ export default function Dashboard() {
         </header>
 
         {/* KPI CARDS */}
-        <section className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
+        <section className="grid gap-4 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4">
           {kpiCards.map((card) => {
             const bgColor = `${card.color}15`; // 15% opacity for background
             const iconColor = card.color;
@@ -410,7 +428,7 @@ export default function Dashboard() {
           </div>
         </section>
 
-        <section className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+        <section className="grid gap-4 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4">
           {highlightCards.map((card) => (
             <article
               key={card.title}
