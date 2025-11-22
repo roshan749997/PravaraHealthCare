@@ -107,34 +107,33 @@ const totalFuel = totalSalaryData.reduce((sum, employee) => sum + parseCurrency(
 
 export default function TotalSalaries() {
   return (
-    <div className="flex min-h-screen flex-col bg-[#000000]">
+    <div className="flex min-h-screen flex-col bg-gray-50 text-gray-900">
       <Navbar />
 
       <main className="mx-auto flex w-full max-w-7xl grow flex-col gap-8 px-4 py-8 sm:gap-10 sm:px-6 sm:py-10">
-        <section className="relative overflow-hidden rounded-3xl bg-neon-gradient px-5 py-8 text-white shadow-2xl neon-glow-gradient sm:px-8 sm:py-10">
-          <div className="absolute inset-y-0 right-0 hidden w-1/3 rounded-bl-[6rem] bg-white/10 blur-3xl sm:block" />
+        <section className="relative overflow-hidden rounded-3xl border border-gray-200 bg-white px-5 py-8 shadow-sm sm:px-8 sm:py-10">
           <div className="relative grid gap-6 lg:grid-cols-[1.25fr_1fr] lg:items-center">
             <div>
-              <span className="inline-flex items-center gap-2 rounded-full glass px-3 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.3em] text-white sm:text-xs">
+              <span className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.3em] text-gray-700 sm:text-xs">
                 Total salaries
               </span>
               <h1 className="mt-4 text-2xl font-semibold sm:text-3xl lg:text-4xl">
                 Comprehensive compensation breakdown
               </h1>
-              <p className="mt-3 max-w-2xl text-xs text-indigo-100/80 sm:mt-4 sm:text-sm">
+              <p className="mt-3 max-w-2xl text-xs text-gray-600 sm:mt-4 sm:text-sm">
                 Audit every salary component including allowances, benefits, vehicle reimbursements, and vouchers. Keep transparency high and approvals swift for Pravara Health Care leadership.
               </p>
               <div className="mt-5 flex flex-wrap gap-2.5 sm:mt-6 sm:gap-3">
                 <NavLink
                   to="/payroll"
-                  className="btn-neon-primary inline-flex items-center gap-2 text-xs sm:px-4 sm:text-sm"
+                  className="inline-flex items-center gap-2 rounded-md border border-blue-600 px-3 py-2 text-xs font-semibold text-blue-600 hover:bg-blue-50 sm:px-4 sm:text-sm"
                 >
                   Back to payroll
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 8.25 3 12l3.75 3.75M3 12h18" />
                   </svg>
                 </NavLink>
-                <button className="btn-neon-outline inline-flex items-center gap-2 text-xs sm:px-4 sm:text-sm">
+                <button className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-100 sm:px-4 sm:text-sm">
                   Export summary
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 20.25h12M12 3.75v12m0 0 3.75-3.75M12 15.75 8.25 12" />
@@ -142,12 +141,12 @@ export default function TotalSalaries() {
                 </button>
               </div>
             </div>
-            <div className="grid gap-3 rounded-2xl glass-card p-4 sm:gap-4 sm:p-5">
+            <div className="grid gap-3 rounded-2xl border border-gray-200 bg-white p-4 sm:gap-4 sm:p-5">
               {[{ label: 'Monthly salary payout', value: formatCurrency(totalMonthlySalary), detail: '+5.1% QoQ' }, { label: 'Monthly allowances', value: formatCurrency(totalRecharge + totalIncentives + totalVouchers + totalFuel), detail: 'All reimbursements combined' }, { label: 'Fuel reimbursements', value: formatCurrency(totalFuel), detail: 'With vehicle tracking' }].map((stat) => (
-                <div key={stat.label} className="rounded-xl glass p-3 sm:p-4">
-                  <p className="text-[0.6rem] font-medium uppercase tracking-[0.3em] text-white/80 sm:text-xs">{stat.label}</p>
-                  <p className="mt-2 text-xl font-semibold text-white sm:text-2xl">{stat.value}</p>
-                  <p className="mt-1 text-[0.65rem] font-medium text-white/70 sm:text-xs">{stat.detail}</p>
+                <div key={stat.label} className="rounded-xl border border-gray-200 bg-gray-50 p-3 sm:p-4">
+                  <p className="text-[0.6rem] font-medium uppercase tracking-[0.3em] text-gray-500 sm:text-xs">{stat.label}</p>
+                  <p className="mt-2 text-xl font-semibold sm:text-2xl">{stat.value}</p>
+                  <p className="mt-1 text-[0.65rem] font-medium text-gray-600 sm:text-xs">{stat.detail}</p>
                 </div>
               ))}
             </div>
@@ -155,18 +154,18 @@ export default function TotalSalaries() {
         </section>
 
         <section className="grid gap-3 sm:grid-cols-4 sm:gap-4">
-          {[{ label: 'Recharge support', value: formatCurrency(totalRecharge), tone: 'bg-[#A020F0]/20 text-[#A020F0]' }, { label: 'Monthly incentives', value: formatCurrency(totalIncentives), tone: 'bg-[#D400FF]/20 text-[#D400FF]' }, { label: 'Gift vouchers', value: formatCurrency(totalVouchers), tone: 'bg-[#FF00CC]/20 text-[#FF00CC]' }, { label: 'Employees covered', value: `${totalSalaryData.length} team members`, tone: 'bg-[#A020F0]/20 text-[#A020F0]' }].map((item) => (
-            <div key={item.label} className="card-neon p-4 sm:p-5">
-              <p className="text-[0.65rem] font-medium uppercase tracking-[0.25em] text-[#A0A0A0] sm:text-xs">{item.label}</p>
-              <p className={`mt-3 inline-flex items-center rounded-full glass px-3 py-1 text-xs font-semibold ${item.tone} sm:text-sm`}>{item.value}</p>
+          {[{ label: 'Recharge support', value: formatCurrency(totalRecharge) }, { label: 'Monthly incentives', value: formatCurrency(totalIncentives) }, { label: 'Gift vouchers', value: formatCurrency(totalVouchers) }, { label: 'Employees covered', value: `${totalSalaryData.length} team members` }].map((item) => (
+            <div key={item.label} className="rounded-lg border border-gray-200 bg-white p-4 sm:p-5">
+              <p className="text-[0.65rem] font-medium uppercase tracking-[0.25em] text-gray-500 sm:text-xs">{item.label}</p>
+              <p className={`mt-3 inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-semibold text-gray-700 sm:text-sm`}>{item.value}</p>
             </div>
           ))}
         </section>
 
-        <section className="overflow-hidden rounded-3xl card-neon">
+        <section className="overflow-hidden rounded-3xl border border-gray-200 bg-white">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-white/10 text-left">
-              <thead className="glass text-[0.65rem] font-semibold uppercase tracking-[0.25em] text-[#A0A0A0] sm:text-xs">
+            <table className="min-w-full divide-y divide-gray-200 text-left">
+              <thead className="bg-gray-50 text-[0.65rem] font-semibold uppercase tracking-[0.25em] text-gray-500 sm:text-xs">
                 <tr>
                   <th scope="col" className="px-4 py-3 sm:px-6 sm:py-4">Employee</th>
                   <th scope="col" className="px-4 py-3 sm:px-6 sm:py-4">Employee ID</th>
@@ -177,12 +176,12 @@ export default function TotalSalaries() {
                   <th scope="col" className="px-4 py-3 sm:px-6 sm:py-4">Gift Vouchers</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/10 text-xs text-white sm:text-sm">
+              <tbody className="divide-y divide-gray-200 text-xs sm:text-sm">
                 {totalSalaryData.map((employee) => (
-                  <tr key={employee.id} className="transition hover:bg-neon-gradient-blur">
+                  <tr key={employee.id} className="transition hover:bg-gray-50">
                     <td className="px-4 py-3 sm:px-6 sm:py-4">
                       <div className="flex items-center gap-3">
-                        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-neon-gradient text-xs font-semibold text-white neon-glow-purple sm:h-10 sm:w-10 sm:text-sm">
+                        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-xs font-semibold text-white sm:h-10 sm:w-10 sm:text-sm">
                           {employee.name
                             .split(' ')
                             .slice(0, 2)
@@ -190,24 +189,24 @@ export default function TotalSalaries() {
                             .join('')}
                         </span>
                         <div>
-                          <p className="text-sm font-semibold text-white sm:text-base">{employee.name}</p>
-                          <p className="text-[0.6rem] font-medium uppercase tracking-[0.25em] text-[#A0A0A0] sm:text-xs">{employee.id}</p>
+                          <p className="text-sm font-semibold sm:text-base">{employee.name}</p>
+                          <p className="text-[0.6rem] font-medium uppercase tracking-[0.25em] text-gray-500 sm:text-xs">{employee.id}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-white/80 sm:px-6 sm:py-4">{employee.id}</td>
-                    <td className="px-4 py-3 text-white sm:px-6 sm:py-4">{employee.monthlySalary}</td>
-                    <td className="px-4 py-3 text-white sm:px-6 sm:py-4">{employee.mobileRecharge}</td>
+                    <td className="px-4 py-3 text-gray-700 sm:px-6 sm:py-4">{employee.id}</td>
+                    <td className="px-4 py-3 sm:px-6 sm:py-4">{employee.monthlySalary}</td>
+                    <td className="px-4 py-3 sm:px-6 sm:py-4">{employee.mobileRecharge}</td>
                     <td className="px-4 py-3 sm:px-6 sm:py-4">
-                      <span className="inline-flex flex-col gap-1 text-[0.65rem] text-white/80 sm:text-xs">
-                        <span className="text-sm font-semibold text-white">{employee.fuelExpense.split('·')[0].trim()}</span>
-                        <span className="text-[0.6rem] font-medium uppercase tracking-[0.25em] text-[#A0A0A0]">
+                      <span className="inline-flex flex-col gap-1 text-[0.65rem] text-gray-700 sm:text-xs">
+                        <span className="text-sm font-semibold">{employee.fuelExpense.split('·')[0].trim()}</span>
+                        <span className="text-[0.6rem] font-medium uppercase tracking-[0.25em] text-gray-500">
                           {employee.fuelExpense.split('·')[1]?.trim() ?? '—'}
                         </span>
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-white sm:px-6 sm:py-4">{employee.monthlyIncentive}</td>
-                    <td className="px-4 py-3 text-white sm:px-6 sm:py-4">{employee.giftVoucher}</td>
+                    <td className="px-4 py-3 sm:px-6 sm:py-4">{employee.monthlyIncentive}</td>
+                    <td className="px-4 py-3 sm:px-6 sm:py-4">{employee.giftVoucher}</td>
                   </tr>
                 ))}
               </tbody>

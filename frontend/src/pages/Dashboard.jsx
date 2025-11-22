@@ -154,20 +154,20 @@ const retentionLegend = [
 
 export default function Dashboard() {
   return (
-    <div className="flex min-h-screen flex-col bg-[#000000] text-white">
+    <div className="flex min-h-screen flex-col bg-gray-50 text-gray-900">
       <Navbar />
       <main className="flex grow">
         <div className="flex w-full flex-col gap-8 px-4 py-8 sm:px-8 lg:px-12 xl:px-16">
           <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-2xl font-semibold text-white">Overview Dashboard</h1>
-              <p className="text-sm text-[#A0A0A0]">Sales overview · Jan 1, 2023 – Jun 30, 2023</p>
+              <h1 className="text-2xl font-semibold">Overview Dashboard</h1>
+              <p className="text-sm text-gray-500">Sales overview · Jan 1, 2023 – Jun 30, 2023</p>
             </div>
             <div className="flex items-center gap-3">
-              <button className="btn-neon-outline text-sm px-4 py-2">
+              <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                 Last 6 months
               </button>
-              <button className="btn-neon-primary text-sm px-4 py-2">
+              <button className="rounded-md border border-blue-600 px-4 py-2 text-sm text-blue-600 hover:bg-blue-50">
                 Export
               </button>
             </div>
@@ -178,36 +178,35 @@ export default function Dashboard() {
             {kpiCards.map((card) => (
               <article
                 key={card.title}
-                className={`relative overflow-hidden rounded-3xl bg-gradient-to-br ${card.gradient} p-6 text-white neon-glow-gradient transition hover:-translate-y-1 hover:neon-glow-strong`}
+                className={`rounded-lg border border-gray-200 bg-white p-5`}
               >
-                <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-white/10 blur-3xl" />
                 <div className="relative flex items-start justify-between">
-                  <div className="rounded-2xl bg-white/15 p-2 backdrop-blur-sm">
+                  <div className="rounded-md bg-blue-50 p-2 text-blue-600">
                     {card.icon}
                   </div>
-                  <span className={`rounded-full px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.25em] ${card.badgeTone}`}>
+                  <span className={`rounded-full bg-gray-100 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.25em] text-gray-600`}>
                     {card.badge}
                   </span>
                 </div>
-                <h2 className="relative mt-6 text-sm font-semibold uppercase tracking-[0.3em] text-white/80">
+                <h2 className="relative mt-6 text-sm font-semibold uppercase tracking-[0.3em] text-gray-500">
                   {card.title}
                 </h2>
                 <p className="relative mt-2 text-3xl font-semibold">{card.value}</p>
-                <p className="relative mt-2 text-sm font-medium text-white/80">{card.helper}</p>
+                <p className="relative mt-2 text-sm font-medium text-gray-500">{card.helper}</p>
               </article>
             ))}
           </section>
 
           {/* TOTAL SALES + SUMMARY */}
           <section className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-            <article className="card-neon">
+            <article className="rounded-lg border border-gray-200 bg-white p-6">
               <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#A0A0A0]">Total Sales</p>
-                  <h2 className="mt-2 text-3xl font-semibold text-white">₹895.39K</h2>
-                  <p className="text-xs text-[#A0A0A0]">last 30 days · +12.5% vs previous period</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.25em] text-gray-500">Total Sales</p>
+                  <h2 className="mt-2 text-3xl font-semibold">₹895.39K</h2>
+                  <p className="text-xs text-gray-500">last 30 days · +12.5% vs previous period</p>
                 </div>
-                <div className="mt-3 rounded-full bg-neon-gradient-blur px-3 py-1 text-xs font-semibold text-white neon-glow-purple">
+                <div className="mt-3 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
                   Jan 1, 2023 – Jun 30, 2023
                 </div>
               </div>
@@ -216,41 +215,41 @@ export default function Dashboard() {
               <div className="mt-6 h-48">
                 <ResponsiveContainer>
                   <BarChart data={topLineData} margin={{ top: 10, right: 16, left: 0, bottom: 0 }}>
-                    <CartesianGrid stroke="rgba(160, 32, 240, 0.2)" strokeDasharray="3 3" />
-                    <XAxis dataKey="month" stroke="#A0A0A0" tick={{ fill: "#A0A0A0" }} />
-                    <YAxis stroke="#A0A0A0" tick={{ fill: "#A0A0A0" }} tickFormatter={(value) => `₹${value}K`} />
+                    <CartesianGrid stroke="rgba(99, 102, 241, 0.2)" strokeDasharray="3 3" />
+                    <XAxis dataKey="month" stroke="#9CA3AF" tick={{ fill: "#6B7280" }} />
+                    <YAxis stroke="#9CA3AF" tick={{ fill: "#6B7280" }} tickFormatter={(value) => `₹${value}K`} />
                 <Tooltip
                     labelFormatter={(label) => `Month: ${label}`}
                     formatter={(value) => [`₹${value}K`, "Revenue"]} 
                     contentStyle={{
                     borderRadius: "1rem",
-                    borderColor: "rgba(160, 32, 240, 0.3)",
-                    backgroundColor: "rgba(26, 26, 26, 0.95)",
-                    color: "#FFFFFF",
+                    borderColor: "#E5E7EB",
+                    backgroundColor: "#FFFFFF",
+                    color: "#111827",
                     }}
                 />
 
-                    <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ paddingBottom: 8, color: "#FFFFFF" }} />
-                    <Bar dataKey="totalSales" name="Revenue" fill="#A020F0" radius={[10, 10, 0, 0]} />
+                    <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ paddingBottom: 8, color: "#111827" }} />
+                    <Bar dataKey="totalSales" name="Revenue" fill="#6366F1" radius={[10, 10, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             </article>
 
-            <article className="card-neon">
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#A0A0A0]">Summary</p>
-              <p className="mt-2 text-xs text-[#A0A0A0]">Jan 1, 2023 – Jun 30, 2023</p>
+            <article className="rounded-lg border border-gray-200 bg-white p-6">
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-gray-500">Summary</p>
+              <p className="mt-2 text-xs text-gray-500">Jan 1, 2023 – Jun 30, 2023</p>
 
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 {summaryStats.map((stat) => (
-                  <article key={stat.label} className="glass-card rounded-2xl p-4">
+                  <article key={stat.label} className="rounded-lg border border-gray-200 bg-white p-4">
                     <div className="flex items-center justify-between">
-                      <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#A0A0A0]">{stat.label}</p>
-                      <span className={`text-xs font-semibold ${stat.trendTone}`}>{stat.trend}</span>
+                      <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gray-500">{stat.label}</p>
+                      <span className={`text-xs font-semibold text-emerald-600`}>{stat.trend}</span>
                     </div>
-                    <p className="mt-3 text-xl font-semibold text-white">{stat.value}</p>
-                    <div className="mt-4 h-2 w-full rounded-full bg-[#1A1A1A]">
-                      <div className={`h-2 rounded-full ${stat.progressTone} neon-glow-purple`} style={{ width: `${stat.progress}%` }} />
+                    <p className="mt-3 text-xl font-semibold">{stat.value}</p>
+                    <div className="mt-4 h-2 w-full rounded-full bg-gray-100">
+                      <div className={`h-2 rounded-full bg-indigo-500`} style={{ width: `${stat.progress}%` }} />
                     </div>
                   </article>
                 ))}
@@ -262,14 +261,14 @@ export default function Dashboard() {
           <section className="grid gap-6 lg:grid-cols-[1.1fr_1fr]">
             
             {/* SALES FUNNEL */}
-            <article className="card-neon">
+            <article className="rounded-lg border border-gray-200 bg-white p-6">
               <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#A0A0A0]">Sales Funnel</p>
-                  <p className="text-xs text-[#A0A0A0]">Jan 1, 2023 – Jun 30, 2023</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.25em] text-gray-500">Sales Funnel</p>
+                  <p className="text-xs text-gray-500">Jan 1, 2023 – Jun 30, 2023</p>
                 </div>
                 <div className="mt-3 flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-neon-gradient-blur px-3 py-1 text-xs font-semibold text-white neon-glow-purple">
+                  <span className="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
                     +4.8% completion
                   </span>
                 </div>
@@ -280,49 +279,48 @@ export default function Dashboard() {
                   <AreaChart data={areaData}>
                     <defs>
                       <linearGradient id="funnelGradient" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stopColor="#A020F0" />
-                        <stop offset="40%" stopColor="#D400FF" />
-                        <stop offset="80%" stopColor="#FF00CC" />
-                        <stop offset="100%" stopColor="#A020F0" />
+                        <stop offset="0%" stopColor="#6366F1" />
+                        <stop offset="50%" stopColor="#60A5FA" />
+                        <stop offset="100%" stopColor="#6366F1" />
                       </linearGradient>
                     </defs>
-                    <XAxis dataKey="name" stroke="#A0A0A0" tick={{ fill: "#A0A0A0", fontSize: 12 }} />
+                    <XAxis dataKey="name" stroke="#9CA3AF" tick={{ fill: "#6B7280", fontSize: 12 }} />
                     <YAxis hide />
                     <Tooltip
                       formatter={(value) => [`${value}%`, "Stage completion"]}
 
                       contentStyle={{
                         borderRadius: "1rem",
-                        borderColor: "rgba(160, 32, 240, 0.3)",
-                        backgroundColor: "rgba(26, 26, 26, 0.95)",
-                        color: "#FFFFFF"
+                        borderColor: "#E5E7EB",
+                        backgroundColor: "#FFFFFF",
+                        color: "#111827"
                       }}
                     />
-                    <Area type="monotone" dataKey="value" stroke="#A020F0" fill="url(#funnelGradient)" strokeWidth={0} />
+                    <Area type="monotone" dataKey="value" stroke="#6366F1" fill="url(#funnelGradient)" strokeWidth={0} />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
 
-              <div className="mt-6 grid gap-4 rounded-3xl glass-card p-4 sm:grid-cols-5">
+              <div className="mt-6 grid gap-4 sm:grid-cols-5">
                 {funnelStages.map((stage) => (
-                  <div key={stage.step} className="flex flex-col gap-1 rounded-2xl glass p-3">
-                    <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#A0A0A0]">{stage.step}</p>
-                    <p className="text-lg font-semibold text-white">{stage.value}</p>
-                    <p className="text-[0.65rem] text-[#A0A0A0]">{stage.conversion}</p>
-                    <div className="mt-auto h-2 rounded-full bg-neon-gradient" />
+                  <div key={stage.step} className="flex flex-col gap-1 rounded-md border border-gray-200 bg-white p-3">
+                    <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gray-500">{stage.step}</p>
+                    <p className="text-lg font-semibold">{stage.value}</p>
+                    <p className="text-[0.65rem] text-gray-500">{stage.conversion}</p>
+                    <div className="mt-auto h-2 rounded-full bg-indigo-500" />
                   </div>
                 ))}
               </div>
             </article>
 
             {/* LIFETIME VALUE */}
-            <article className="card-neon">
+            <article className="rounded-lg border border-gray-200 bg-white p-6">
               <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#A0A0A0]">Average Lifetime Revenue</p>
-                  <p className="text-xs text-[#A0A0A0]">Jan 1, 2023 – Jun 30, 2023</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.25em] text-gray-500">Average Lifetime Revenue</p>
+                  <p className="text-xs text-gray-500">Jan 1, 2023 – Jun 30, 2023</p>
                 </div>
-                <span className="mt-3 rounded-full bg-neon-gradient px-3 py-1 text-xs font-semibold text-white neon-glow-purple">
+                <span className="mt-3 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
                   +₹56K YoY
                 </span>
               </div>
@@ -330,35 +328,35 @@ export default function Dashboard() {
               <div className="mt-6 h-48">
                 <ResponsiveContainer>
                   <LineChart data={lifetimeRevenueData} margin={{ top: 10, right: 16, left: 0, bottom: 0 }}>
-                    <CartesianGrid stroke="rgba(160, 32, 240, 0.2)" strokeDasharray="3 3" />
-                    <XAxis dataKey="month" stroke="#A0A0A0" tick={{ fill: "#A0A0A0" }} />
-                    <YAxis stroke="#A0A0A0" tick={{ fill: "#A0A0A0" }} tickFormatter={(value) => `₹${value}K`} />
+                    <CartesianGrid stroke="rgba(99, 102, 241, 0.2)" strokeDasharray="3 3" />
+                    <XAxis dataKey="month" stroke="#9CA3AF" tick={{ fill: "#6B7280" }} />
+                    <YAxis stroke="#9CA3AF" tick={{ fill: "#6B7280" }} tickFormatter={(value) => `₹${value}K`} />
                     <Tooltip
                       labelFormatter={(label) => `Month: ${label}`}
                       formatter={(value, name) => [`₹${value}K`, name]}
                       contentStyle={{
                         borderRadius: "1rem",
-                        borderColor: "rgba(160, 32, 240, 0.3)",
-                        backgroundColor: "rgba(26, 26, 26, 0.95)",
-                        color: "#FFFFFF"
+                        borderColor: "#E5E7EB",
+                        backgroundColor: "#FFFFFF",
+                        color: "#111827"
                       }}
                     />
-                    <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ paddingBottom: 8, color: "#FFFFFF" }} />
+                    <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ paddingBottom: 8, color: "#111827" }} />
 
                     <Line
                       type="monotone"
                       dataKey="newCustomers"
-                      stroke="#FF00CC"
+                      stroke="#10B981"
                       strokeWidth={3}
-                      dot={{ r: 3, fill: "#FF00CC" }}
+                      dot={{ r: 3, fill: "#10B981" }}
                       name="New customers"
                     />
                     <Line
                       type="monotone"
                       dataKey="returningCustomers"
-                      stroke="#A020F0"
+                      stroke="#6366F1"
                       strokeWidth={3}
-                      dot={{ r: 3, fill: "#A020F0" }}
+                      dot={{ r: 3, fill: "#6366F1" }}
                       name="Returning customers"
                     />
                   </LineChart>
@@ -369,24 +367,24 @@ export default function Dashboard() {
 
           {/* RETENTION + ACTION CENTER */}
           <section className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-            <article className="card-neon">
+            <article className="rounded-lg border border-gray-200 bg-white p-6">
               <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#A0A0A0]">Customer Retention</p>
-                  <p className="text-xs text-[#A0A0A0]">Jan 1, 2023 – Jun 30, 2023</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.25em] text-gray-500">Customer Retention</p>
+                  <p className="text-xs text-gray-500">Jan 1, 2023 – Jun 30, 2023</p>
                 </div>
-                <span className="mt-3 rounded-full bg-neon-gradient-blur px-3 py-1 text-xs font-semibold text-white neon-glow-purple">
+                <span className="mt-3 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
                   87% avg retention
                 </span>
               </div>
 
               <div className="mt-6 overflow-x-auto">
-                <table className="min-w-full border-separate border-spacing-2 text-xs font-semibold uppercase tracking-[0.2em] text-white">
+                <table className="min-w-full border-separate border-spacing-2 text-xs font-semibold uppercase tracking-[0.2em]">
                   <thead>
                     <tr>
-                      <th className="px-3 py-2 text-left text-[#A0A0A0]">Month</th>
+                      <th className="px-3 py-2 text-left text-gray-500">Month</th>
                       {["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6"].map((label) => (
-                        <th key={label} className="px-3 py-2 text-center text-[#A0A0A0]">
+                        <th key={label} className="px-3 py-2 text-center text-gray-500">
                           {label}
                         </th>
                       ))}
@@ -395,10 +393,10 @@ export default function Dashboard() {
                   <tbody>
                     {retentionMatrix.map((row) => (
                       <tr key={row.month}>
-                        <td className="px-3 py-2 text-left text-sm font-semibold text-white">{row.month}</td>
+                        <td className="px-3 py-2 text-left text-sm font-semibold">{row.month}</td>
                         {row.cohorts.map((value, idx) => (
                           <td key={`${row.month}-${idx}`} className="px-1 py-1 text-center">
-                            <div className={`rounded-xl bg-neon-gradient px-2 py-3 text-xs font-semibold neon-glow-purple`}>
+                            <div className={`rounded-lg border border-indigo-100 bg-indigo-50 px-2 py-3 text-xs font-semibold text-indigo-700`}>
                               {value}
                             </div>
                           </td>
@@ -411,31 +409,31 @@ export default function Dashboard() {
 
               <div className="mt-6 flex flex-wrap gap-3 text-xs text-[#A0A0A0]">
                 {retentionLegend.map((item) => (
-                  <span key={item.label} className="inline-flex items-center gap-2 rounded-full glass px-3 py-1">
-                    <span className="h-2 w-6 rounded-full bg-neon-gradient" />
+                  <span key={item.label} className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1">
+                    <span className="h-2 w-6 rounded-full bg-indigo-500" />
                     {item.label}
                   </span>
                 ))}
               </div>
             </article>
 
-            <article className="flex flex-col gap-4 card-neon">
+            <article className="flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#A0A0A0]">Action Center</p>
-                  <p className="text-xs text-[#A0A0A0]">Keep momentum high with these next steps</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.25em] text-gray-500">Action Center</p>
+                  <p className="text-xs text-gray-500">Keep momentum high with these next steps</p>
                 </div>
-                <span className="rounded-full bg-neon-gradient px-3 py-1 text-xs font-semibold text-white neon-glow-purple">3 open</span>
+                <span className="rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">3 open</span>
               </div>
 
               <ul className="space-y-3">
                 {actionItems.map((item) => (
                   <li
                     key={item.title}
-                    className="rounded-2xl glass-card px-4 py-3 text-sm font-medium"
+                    className="rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm font-medium"
                   >
-                    <p className="text-white">{item.title}</p>
-                    <div className="mt-2 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.2em] text-[#A0A0A0]">
+                    <p>{item.title}</p>
+                    <div className="mt-2 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">
                       <span>{item.owner}</span>
                       <span>{item.due}</span>
                     </div>
@@ -443,7 +441,7 @@ export default function Dashboard() {
                 ))}
               </ul>
 
-              <button className="mt-auto btn-neon-primary text-sm px-4 py-2">
+              <button className="mt-auto rounded-md border border-blue-600 px-4 py-2 text-sm text-blue-600 hover:bg-blue-50">
                 View full roadmap
               </button>
             </article>

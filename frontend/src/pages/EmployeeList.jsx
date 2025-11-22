@@ -87,7 +87,7 @@ const funnelData = [
   { name: "Hire", value: 45 },
 ];
 
-const funnelColors = ["#A020F0", "#D400FF", "#FF00CC", "#A020F0", "#D400FF", "#FF00CC"];
+const funnelColors = ["#6366F1", "#60A5FA", "#10B981", "#6366F1", "#60A5FA", "#10B981"];
 
 const funnelInsights = [
   { stage: "Application → Phone Screen", drop: "15% drop", note: "Automated acknowledgement reduced wait time" },
@@ -104,7 +104,7 @@ const pipelineData = [
   { name: "Hire", value: 17, description: "Background & onboarding" },
 ];
 
-const pipelineColors = ["#A020F0", "#D400FF", "#FF00CC", "#A020F0", "#D400FF", "#FF00CC"];
+const pipelineColors = ["#6366F1", "#60A5FA", "#10B981", "#6366F1", "#60A5FA", "#10B981"];
 
 const highlightCards = [
   {
@@ -129,20 +129,20 @@ const highlightCards = [
 
 export default function Dashboard() {
   return (
-    <div className="flex min-h-screen flex-col bg-[#000000]">
+    <div className="flex min-h-screen flex-col bg-gray-50 text-gray-900">
       <Navbar />
       <main className="mx-auto w-full max-w-screen-2xl grow px-4 py-10 sm:px-6 lg:px-10 xl:px-16">
-        <div className="flex flex-col gap-8 card-neon sm:p-8 xl:p-12">
+        <div className="flex flex-col gap-8 rounded-lg border border-gray-200 bg-white sm:p-8 xl:p-12">
         <header className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
-            <p className="inline-flex items-center gap-2 rounded-full glass px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-[#A0A0A0]">
+            <p className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-gray-500">
               Overview
             </p>
-            <h1 className="mt-4 text-2xl font-semibold text-white sm:text-3xl">
+            <h1 className="mt-4 text-2xl font-semibold sm:text-3xl">
               Monthly Hiring Dashboard with Recruitment Funnel
             </h1>
           </div>
-          <p className="self-start rounded-full bg-neon-gradient px-4 py-2 text-sm font-semibold text-white neon-glow-purple">
+          <p className="self-start rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700">
             August 2021
           </p>
         </header>
@@ -151,37 +151,34 @@ export default function Dashboard() {
           {overviewStats.map((stat) => (
             <article
               key={stat.label}
-              className={`group flex flex-col justify-between card-neon-gradient p-5 transition hover:-translate-y-1 hover:neon-glow-strong sm:p-6`}
+              className={`group flex flex-col justify-between rounded-lg border border-gray-200 bg-white p-5 transition sm:p-6`}
             >
               <header className="flex items-center justify-between">
-                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-white/70">{stat.label}</p>
-                <span className="inline-flex items-center gap-1 rounded-full glass px-2.5 py-1 text-[0.65rem] font-medium text-white transition group-hover:bg-white/10">
+                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gray-500">{stat.label}</p>
+                <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[0.65rem] font-medium text-gray-700 transition">
                   {stat.change}
                 </span>
               </header>
               <div className="mt-4">
-                <p className="text-3xl font-semibold text-white sm:text-4xl">{stat.value}</p>
-                <p className="mt-2 text-sm text-white/80">{stat.subtitle}</p>
+                <p className="text-3xl font-semibold sm:text-4xl">{stat.value}</p>
+                <p className="mt-2 text-sm text-gray-500">{stat.subtitle}</p>
               </div>
               <div className="mt-5">
-                <div className="h-2 w-full rounded-full bg-white/10">
-                  <div
-                    className={`h-2 rounded-full ${stat.progressColor} neon-glow-purple`}
-                    style={{ width: `${stat.progress}%` }}
-                  />
+                <div className="h-2 w-full rounded-full bg-gray-100">
+                  <div className="h-2 rounded-full bg-indigo-500" style={{ width: `${stat.progress}%` }} />
                 </div>
-                <p className={`mt-2 text-xs font-semibold ${stat.changeTone}`}>{stat.progressLabel}</p>
+                <p className={`mt-2 text-xs font-semibold text-emerald-600`}>{stat.progressLabel}</p>
               </div>
             </article>
           ))}
         </section>
 
         <section className="grid gap-6 lg:grid-cols-[1.1fr_1fr_1fr]">
-          <div className="card-neon">
-            <h2 className="text-lg font-semibold text-white">Monthly Metrics</h2>
-            <div className="mt-4 overflow-hidden rounded-xl glass-card">
-              <table className="w-full text-left text-sm text-white">
-                <thead className="glass text-xs font-semibold uppercase tracking-widest text-[#A0A0A0]">
+          <div className="rounded-lg border border-gray-200 bg-white p-6">
+            <h2 className="text-lg font-semibold">Monthly Metrics</h2>
+            <div className="mt-4 overflow-hidden rounded-xl border border-gray-200">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-gray-50 text-xs font-semibold uppercase tracking-widest text-gray-500">
                   <tr>
                     <th className="px-4 py-3">Month</th>
                     <th className="px-4 py-3 text-center">Hired</th>
@@ -193,25 +190,25 @@ export default function Dashboard() {
                   {monthlyMetrics.map((row, index) => (
                     <tr
                       key={row.month}
-                      className={index % 2 === 0 ? "bg-white/5" : "bg-white/10"}
+                      className="bg-white"
                     >
-                      <td className="px-4 py-3 font-medium text-white">{row.month}</td>
+                      <td className="px-4 py-3 font-medium">{row.month}</td>
                       <td
                         className={`px-4 py-3 text-center text-base font-semibold ${
-                          row.hired === "1" ? "text-[#A020F0]" : "text-white"
+                          row.hired === "1" ? "text-indigo-600" : "text-gray-900"
                         }`}
                       >
                         {row.hired}
                       </td>
                       <td
                         className={`px-4 py-3 text-center text-base font-semibold ${
-                          row.daysToHire === "6" ? "text-[#FF00CC]" : "text-white"
+                          row.daysToHire === "6" ? "text-indigo-600" : "text-gray-900"
                         }`}
                       >
                         {row.daysToHire}
                       </td>
                       <td className="px-4 py-3 text-center">
-                        <span className="inline-flex items-center justify-center rounded-full glass px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-white">
+                        <span className="inline-flex items-center justify-center rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-gray-700">
                           {row.status}
                         </span>
                       </td>
@@ -222,17 +219,17 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="card-neon">
-            <h2 className="text-lg font-semibold text-white">Recruitment Funnel</h2>
+          <div className="rounded-lg border border-gray-200 bg-white p-6">
+            <h2 className="text-lg font-semibold">Recruitment Funnel</h2>
             <div className="mt-4 h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <FunnelChart>
-                  <Tooltip formatter={(value) => `${value}%`} contentStyle={{ backgroundColor: "rgba(26, 26, 26, 0.95)", borderColor: "rgba(160, 32, 240, 0.3)", borderRadius: "12px", color: "#FFFFFF" }} />
+                  <Tooltip formatter={(value) => `${value}%`} contentStyle={{ backgroundColor: "#FFFFFF", borderColor: "#E5E7EB", borderRadius: "12px", color: "#111827" }} />
                   <Funnel
                     dataKey="value"
                     data={funnelData}
                     isAnimationActive={false}
-                    fill="#A020F0"
+                    fill="#6366F1"
                     stroke="none"
                   >
                     {funnelData.map((entry, index) => (
@@ -240,14 +237,14 @@ export default function Dashboard() {
                     ))}
                     <LabelList
                       position="right"
-                      fill="#FFFFFF"
+                      fill="#111827"
                       stroke="none"
                       dataKey="name"
                       formatter={(value, entry) => (entry?.name ? entry.name : value ?? "")}
                     />
                     <LabelList
                       position="inside"
-                      fill="#FFFFFF"
+                      fill="#111827"
                       stroke="none"
                       dataKey="value"
                       formatter={(value) => (value !== undefined ? `${value}%` : "")}
@@ -258,10 +255,10 @@ export default function Dashboard() {
             </div>
             <ul className="mt-4 space-y-3">
               {funnelInsights.map((item) => (
-                <li key={item.stage} className="rounded-2xl glass-card px-4 py-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#A0A0A0]">{item.stage}</p>
-                  <div className="mt-1 flex items-center justify-between text-sm text-white">
-                    <span className="font-semibold text-[#A020F0]">{item.drop}</span>
+                <li key={item.stage} className="rounded-lg border border-gray-200 bg-white px-4 py-3">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">{item.stage}</p>
+                  <div className="mt-1 flex items-center justify-between text-sm">
+                    <span className="font-semibold text-indigo-600">{item.drop}</span>
                     <span>{item.note}</span>
                   </div>
                 </li>
@@ -269,15 +266,15 @@ export default function Dashboard() {
             </ul>
           </div>
 
-          <div className="card-neon">
-            <h2 className="text-lg font-semibold text-white">Pipeline Efficiency of Hiring</h2>
-            <p className="mt-1 text-xs font-medium uppercase tracking-[0.25em] text-[#A0A0A0]">
+          <div className="rounded-lg border border-gray-200 bg-white p-6">
+            <h2 className="text-lg font-semibold">Pipeline Efficiency of Hiring</h2>
+            <p className="mt-1 text-xs font-medium uppercase tracking-[0.25em] text-gray-500">
               Days taken for each stage in recruitment process
             </p>
             <div className="mt-2 h-72">
               <ResponsiveContainer>
                 <PieChart>
-                  <Tooltip formatter={(value) => `${value}%`} contentStyle={{ backgroundColor: "rgba(26, 26, 26, 0.95)", borderColor: "rgba(160, 32, 240, 0.3)", borderRadius: "12px", color: "#FFFFFF" }} />
+                  <Tooltip formatter={(value) => `${value}%`} contentStyle={{ backgroundColor: "#FFFFFF", borderColor: "#E5E7EB", borderRadius: "12px", color: "#111827" }} />
                   <Pie
                     data={pipelineData}
                     dataKey="value"
@@ -297,27 +294,27 @@ export default function Dashboard() {
                     y="50%"
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    className="fill-white text-2xl font-semibold"
+                    className="fill-gray-900 text-2xl font-semibold"
                   >
                     100%
                   </text>
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <ul className="mt-4 grid grid-cols-1 gap-3 text-sm text-white sm:grid-cols-2">
+            <ul className="mt-4 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
               {pipelineData.map((stage, index) => (
                 <li
                   key={stage.name}
-                  className="flex items-start gap-3 rounded-2xl glass-card px-3.5 py-3"
+                  className="flex items-start gap-3 rounded-lg border border-gray-200 bg-white px-3.5 py-3"
                 >
                   <span
-                    className="mt-1 h-3 w-3 rounded-full bg-neon-gradient"
+                    className="mt-1 h-3 w-3 rounded-full"
                     style={{ backgroundColor: pipelineColors[index] }}
                     aria-hidden="true"
                   />
                   <div>
-                    <p className="text-sm font-semibold text-white">{stage.name}</p>
-                    <p className="text-xs text-[#A0A0A0]">{stage.description}</p>
+                    <p className="text-sm font-semibold">{stage.name}</p>
+                    <p className="text-xs text-gray-500">{stage.description}</p>
                   </div>
                 </li>
               ))}
@@ -329,18 +326,18 @@ export default function Dashboard() {
           {highlightCards.map((card) => (
             <article
               key={card.title}
-              className="flex flex-col gap-3 card-neon"
+              className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-6"
             >
-              <span className={`inline-flex w-max items-center rounded-full ${card.color} px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-white neon-glow-purple`}>
+              <span className={`inline-flex w-max items-center rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-indigo-700`}>
                 {card.title}
               </span>
-              <p className="text-lg font-semibold text-white">{card.value}</p>
-              <p className="text-sm text-white/80">{card.description}</p>
+              <p className="text-lg font-semibold">{card.value}</p>
+              <p className="text-sm text-gray-600">{card.description}</p>
             </article>
           ))}
         </section>
 
-        <p className="text-center text-xs text-[#A0A0A0]">
+        <p className="text-center text-xs text-gray-500">
           This graph/chart is linked to Excel, and changes automatically based on data. Just left click on it and select "Edit Data".
         </p>
         </div>

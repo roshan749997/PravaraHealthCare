@@ -15,7 +15,7 @@ export default function Navbar() {
 
   return (
     // ⭐ Removed transparency & glass → added solid background
-    <header className="sticky top-0 z-40 bg-[#0D0D0D]">
+    <header className="sticky top-0 z-40 bg-white border-b border-gray-200">
       <nav className="mx-auto flex w-full max-w-screen-2xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
 
         {/* Logo */}
@@ -23,14 +23,14 @@ export default function Navbar() {
           to="/"
           className="flex shrink-0 items-center gap-3 rounded-full px-2 py-1"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-neon-gradient text-sm font-semibold uppercase text-white neon-glow-purple sm:h-10 sm:w-10 sm:text-base">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold uppercase text-white sm:h-10 sm:w-10 sm:text-base">
             PH
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-semibold text-white sm:text-base">
+            <span className="text-sm font-semibold text-gray-900 sm:text-base">
               Pravara Health Care
             </span>
-            <span className="text-[0.6rem] font-medium uppercase tracking-[0.25em] text-[#A0A0A0] sm:text-xs">
+            <span className="text-[0.6rem] font-medium uppercase tracking-[0.25em] text-gray-500 sm:text-xs">
               Employee CRM
             </span>
           </div>
@@ -41,7 +41,7 @@ export default function Navbar() {
           type="button"
           aria-expanded={isOpen}
           aria-controls="primary-navigation"
-          className="inline-flex items-center justify-center rounded-full px-3 py-2 text-sm font-medium text-white transition lg:hidden"
+          className="inline-flex items-center justify-center rounded-full px-3 py-2 text-sm font-medium text-gray-700 transition lg:hidden"
           onClick={() => setIsOpen((open) => !open)}
         >
           <span className="sr-only">Toggle navigation</span>
@@ -70,12 +70,12 @@ export default function Navbar() {
           id="primary-navigation"
           className={`${
             isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-          } absolute inset-x-4 top-[calc(100%+0.75rem)] grid overflow-hidden rounded-2xl bg-[#151515] shadow-lg transition-[grid-template-rows] duration-200 
+          } absolute inset-x-4 top-[calc(100%+0.75rem)] grid overflow-hidden rounded-2xl bg-white border border-gray-200 shadow-lg transition-[grid-template-rows] duration-200 
           lg:static lg:inset-auto lg:grid-rows-[1fr] lg:flex lg:flex-1 lg:justify-center 
-          lg:rounded-none lg:bg-transparent lg:px-4 lg:shadow-none`}
+          lg:rounded-none lg:bg-transparent lg:border-0 lg:px-4 lg:shadow-none`}
         >
           <div className="overflow-hidden lg:flex lg:w-full lg:justify-center lg:overflow-visible">
-            <ul className="flex flex-col gap-1 px-4 py-4 text-sm text-white 
+            <ul className="flex flex-col gap-1 px-4 py-4 text-sm text-gray-700 
                            lg:flex-row lg:items-center lg:justify-center lg:gap-3 lg:px-0 lg:py-0">
               {navLinks.map((link) => (
                 <li key={link.label} className="lg:flex">
@@ -84,10 +84,10 @@ export default function Navbar() {
                     className={({ isActive }) =>
                       [
                         "flex items-center gap-2 rounded-full px-3 py-2 transition",
-                        "hover:bg-neon-gradient-blur hover:text-white",
+                        "hover:bg-gray-100 hover:text-gray-900",
                         isActive
-                          ? "bg-neon-gradient-blur text-white neon-glow-purple"
-                          : "text-[#A0A0A0]",
+                          ? "bg-gray-100 text-indigo-600"
+                          : "text-gray-600",
                       ].join(" ")
                     }
                   >
