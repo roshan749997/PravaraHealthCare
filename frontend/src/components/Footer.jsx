@@ -67,14 +67,12 @@ export default function Footer() {
     <footer className="relative mt-10 border-t border-gray-200 bg-white text-gray-700">
       <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-10 sm:gap-12 sm:px-6 sm:py-12 md:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-4 sm:space-y-5">
-          <div className="inline-flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-600 text-white sm:h-12 sm:w-12">
-              <span className="text-base font-semibold sm:text-lg">PH</span>
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-gray-900 sm:text-base">Pravara Health Care</p>
-              <p className="text-[0.55rem] font-medium uppercase tracking-[0.3em] text-gray-500 sm:text-xs">Employee CRM Platform</p>
-            </div>
+          <div className="inline-flex items-center rounded-xl border border-gray-200 bg-white px-4 py-3">
+            <img 
+              src="https://res.cloudinary.com/duc9svg7w/image/upload/v1763808251/pravara_logo_bmg7bj.png" 
+              alt="Pravara Health Care Logo" 
+              className="h-10 w-auto sm:h-12"
+            />
           </div>
           <p className="max-w-xs text-xs text-gray-500 sm:text-sm">
             Empowering Pravara Health Care teams with real-time employee intelligence, payroll transparency, and operational alignment.

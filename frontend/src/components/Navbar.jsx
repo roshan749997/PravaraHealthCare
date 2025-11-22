@@ -21,19 +21,13 @@ export default function Navbar() {
         {/* Logo */}
         <NavLink
           to="/"
-          className="flex shrink-0 items-center gap-3 rounded-full px-2 py-1"
+          className="flex shrink-0 items-center rounded-full px-2 py-1"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold uppercase text-white sm:h-10 sm:w-10 sm:text-base">
-            PH
-          </div>
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold text-gray-900 sm:text-base">
-              Pravara Health Care
-            </span>
-            <span className="text-[0.6rem] font-medium uppercase tracking-[0.25em] text-gray-500 sm:text-xs">
-              Employee CRM
-            </span>
-          </div>
+          <img 
+            src="https://res.cloudinary.com/duc9svg7w/image/upload/v1763808251/pravara_logo_bmg7bj.png" 
+            alt="Pravara Health Care Logo" 
+            className="h-9 w-auto sm:h-10"
+          />
         </NavLink>
 
         {/* Mobile Button */}
