@@ -68,7 +68,7 @@ export default function Footer() {
       <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-10 sm:gap-12 sm:px-6 sm:py-12 md:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-4 sm:space-y-5">
           <div className="inline-flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-600 text-white sm:h-12 sm:w-12">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-600 text-white sm:h-12 sm:w-12">
               <span className="text-base font-semibold sm:text-lg">PH</span>
             </div>
             <div>
@@ -84,7 +84,7 @@ export default function Footer() {
               <a
                 key={link.label}
                 href={link.href}
-                className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-[0.65rem] font-semibold text-gray-700 transition hover:border-indigo-300 hover:text-indigo-600 sm:text-xs"
+                className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-[0.65rem] font-semibold text-gray-700 transition hover:border-gray-400 hover:bg-gray-50 hover:text-gray-900 sm:text-xs"
               >
                 {link.icon}
                 {link.label}
@@ -102,7 +102,7 @@ export default function Footer() {
                   className="group inline-flex items-center gap-3 rounded-xl border border-transparent px-3 py-2 text-xs transition hover:border-gray-200 hover:bg-gray-50 hover:text-gray-900 sm:text-sm"
                   href={link.href}
                 >
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full border border-indigo-100 bg-indigo-50 text-indigo-600 sm:h-8 sm:w-8">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-200 bg-gray-100 text-gray-600 sm:h-8 sm:w-8">
                     {link.icon}
                   </span>
                   {link.label}
@@ -117,8 +117,8 @@ export default function Footer() {
           <ul className="mt-4 space-y-2 text-sm text-gray-700">
             {policyLinks.map((link) => (
               <li key={link.label}>
-                <a className="inline-flex items-center gap-2 text-xs transition hover:text-indigo-600 sm:text-sm" href={link.href}>
-                  <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
+                <a className="inline-flex items-center gap-2 text-xs transition hover:text-gray-900 sm:text-sm" href={link.href}>
+                  <span className="h-1.5 w-1.5 rounded-full bg-gray-500" />
                   {link.label}
                 </a>
               </li>
@@ -137,7 +137,7 @@ export default function Footer() {
           </div>
           <div className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-xs text-gray-700 sm:text-sm">
             <p className="text-[0.6rem] font-semibold uppercase tracking-[0.3em] text-gray-500 sm:text-xs">Email & Support</p>
-            <a className="mt-2 block text-sm font-semibold text-gray-900 transition hover:text-indigo-600" href="mailto:support@pravarahealthcare.in">
+            <a className="mt-2 block text-sm font-semibold text-gray-900 transition hover:text-gray-700" href="mailto:support@pravarahealthcare.in">
               support@pravarahealthcare.in
             </a>
             <p className="mt-2 text-xs text-gray-500 sm:text-sm">Phone: +91 1800-123-4521</p>
@@ -149,13 +149,13 @@ export default function Footer() {
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-5 text-[0.65rem] font-medium text-gray-500 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-6 sm:text-xs">
           <p>© {new Date().getFullYear()} Pravara Health Care. All rights reserved.</p>
           <div className="flex flex-wrap gap-3 sm:gap-4">
-            <a className="transition hover:text-indigo-600" href="#">
+            <a className="transition hover:text-gray-900" href="#">
               Support Portal
             </a>
-            <a className="transition hover:text-indigo-600" href="#">
+            <a className="transition hover:text-gray-900" href="#">
               Status
             </a>
-            <a className="transition hover:text-indigo-600" href="#">
+            <a className="transition hover:text-gray-900" href="#">
               Accessibility
             </a>
           </div>

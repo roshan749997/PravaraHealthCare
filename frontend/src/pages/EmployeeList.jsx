@@ -2,6 +2,46 @@ import Navbar from "../components/Navbar.jsx";
 import Footer from "../components/Footer.jsx";
 import { Cell, Funnel, FunnelChart, LabelList, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
+// KPI Cards for Hiring Dashboard - matching Dashboard.jsx style
+const kpiCards = [
+  {
+    title: "Hiring Rate",
+    value: "2.1%",
+    helper: "+0.6pp vs last month",
+    badge: "Healthy",
+    color: "#F59E0B", // Orange - Employee Distribution color
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.375 21c-2.331 0-4.512-.645-6.375-1.765Z" />
+      </svg>
+    ),
+  },
+  {
+    title: "Days to Hire",
+    value: "5 Days",
+    helper: "-2 days vs last month",
+    badge: "Improving",
+    color: "#DC2626", // Red - Employee Distribution color
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+      </svg>
+    ),
+  },
+  {
+    title: "Cost Per Hire",
+    value: "₹1,400",
+    helper: "+₹120 vs budget",
+    badge: "On Track",
+    color: "#84CC16", // Lime Green - Employee Distribution color
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+      </svg>
+    ),
+  },
+];
+
 const overviewStats = [
   {
     label: "Hired",
@@ -87,7 +127,7 @@ const funnelData = [
   { name: "Hire", value: 45 },
 ];
 
-const funnelColors = ["#6366F1", "#60A5FA", "#10B981", "#6366F1", "#60A5FA", "#10B981"];
+const funnelColors = ["#F59E0B", "#DC2626", "#84CC16", "#06B6D4", "#6B7280"];
 
 const funnelInsights = [
   { stage: "Application → Phone Screen", drop: "15% drop", note: "Automated acknowledgement reduced wait time" },
@@ -104,7 +144,7 @@ const pipelineData = [
   { name: "Hire", value: 17, description: "Background & onboarding" },
 ];
 
-const pipelineColors = ["#6366F1", "#60A5FA", "#10B981", "#6366F1", "#60A5FA", "#10B981"];
+const pipelineColors = ["#F59E0B", "#DC2626", "#84CC16", "#06B6D4", "#6B7280"];
 
 const highlightCards = [
   {
@@ -131,8 +171,8 @@ export default function Dashboard() {
   return (
     <div className="flex min-h-screen flex-col bg-gray-50 text-gray-900">
       <Navbar />
-      <main className="mx-auto w-full max-w-screen-2xl grow px-4 py-10 sm:px-6 lg:px-10 xl:px-16">
-        <div className="flex flex-col gap-8 rounded-lg border border-gray-200 bg-white sm:p-8 xl:p-12">
+      <main className="mx-auto w-full max-w-screen-2xl grow overflow-hidden px-3 py-6 sm:px-4 sm:py-8 lg:px-6 xl:px-8">
+        <div className="flex flex-col gap-6 overflow-hidden rounded-lg border border-gray-200 bg-white p-4 sm:gap-8 sm:p-6 lg:p-8">
         <header className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
             <p className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-gray-500">
@@ -146,6 +186,47 @@ export default function Dashboard() {
             August 2021
           </p>
         </header>
+
+        {/* KPI CARDS */}
+        <section className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
+          {kpiCards.map((card) => {
+            const bgColor = `${card.color}15`; // 15% opacity for background
+            const iconColor = card.color;
+            const borderColor = `${card.color}40`; // 40% opacity for border
+            
+            return (
+              <article
+                key={card.title}
+                className="rounded-lg bg-white p-5"
+                style={{
+                  borderWidth: '1px',
+                  borderStyle: 'solid',
+                  borderColor: borderColor,
+                }}
+              >
+                <div className="relative flex items-start justify-between">
+                  <div 
+                    className="rounded-md p-2"
+                    style={{
+                      backgroundColor: bgColor,
+                      color: iconColor,
+                    }}
+                  >
+                    {card.icon}
+                  </div>
+                  <span className={`rounded-full bg-gray-100 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.25em] text-gray-600`}>
+                    {card.badge}
+                  </span>
+                </div>
+                <h2 className="relative mt-6 text-sm font-semibold uppercase tracking-[0.3em] text-gray-500">
+                  {card.title}
+                </h2>
+                <p className="relative mt-2 text-3xl font-semibold">{card.value}</p>
+                <p className="relative mt-2 text-sm font-medium text-gray-500">{card.helper}</p>
+              </article>
+            );
+          })}
+        </section>
 
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {overviewStats.map((stat) => (
@@ -174,9 +255,11 @@ export default function Dashboard() {
         </section>
 
         <section className="grid gap-6 lg:grid-cols-[1.1fr_1fr_1fr]">
-          <div className="rounded-lg border border-gray-200 bg-white p-6">
+          <div className="rounded-lg border border-gray-200 bg-white p-4 sm:p-6">
             <h2 className="text-lg font-semibold">Monthly Metrics</h2>
-            <div className="mt-4 overflow-hidden rounded-xl border border-gray-200">
+            <div className="mt-4 -mx-2 overflow-x-auto sm:mx-0">
+              <div className="inline-block min-w-full align-middle">
+                <div className="overflow-hidden rounded-xl border border-gray-200">
               <table className="w-full text-left text-sm">
                 <thead className="bg-gray-50 text-xs font-semibold uppercase tracking-widest text-gray-500">
                   <tr>
@@ -215,11 +298,13 @@ export default function Dashboard() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+                </table>
+              </div>
+            </div>
             </div>
           </div>
 
-          <div className="rounded-lg border border-gray-200 bg-white p-6">
+          <div className="rounded-lg border border-gray-200 bg-white p-4 sm:p-6">
             <h2 className="text-lg font-semibold">Recruitment Funnel</h2>
             <div className="mt-4 h-72">
               <ResponsiveContainer width="100%" height="100%">
@@ -229,7 +314,7 @@ export default function Dashboard() {
                     dataKey="value"
                     data={funnelData}
                     isAnimationActive={false}
-                    fill="#6366F1"
+                    fill="#A020F0"
                     stroke="none"
                   >
                     {funnelData.map((entry, index) => (
@@ -254,11 +339,11 @@ export default function Dashboard() {
               </ResponsiveContainer>
             </div>
             <ul className="mt-4 space-y-3">
-              {funnelInsights.map((item) => (
+              {funnelInsights.map((item, index) => (
                 <li key={item.stage} className="rounded-lg border border-gray-200 bg-white px-4 py-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">{item.stage}</p>
                   <div className="mt-1 flex items-center justify-between text-sm">
-                    <span className="font-semibold text-indigo-600">{item.drop}</span>
+                    <span className="font-semibold" style={{ color: funnelColors[index % funnelColors.length] }}>{item.drop}</span>
                     <span>{item.note}</span>
                   </div>
                 </li>
@@ -266,7 +351,7 @@ export default function Dashboard() {
             </ul>
           </div>
 
-          <div className="rounded-lg border border-gray-200 bg-white p-6">
+          <div className="rounded-lg border border-gray-200 bg-white p-4 sm:p-6">
             <h2 className="text-lg font-semibold">Pipeline Efficiency of Hiring</h2>
             <p className="mt-1 text-xs font-medium uppercase tracking-[0.25em] text-gray-500">
               Days taken for each stage in recruitment process
@@ -286,7 +371,7 @@ export default function Dashboard() {
                     stroke="none"
                   >
                     {pipelineData.map((entry, index) => (
-                      <Cell key={entry.name} fill={pipelineColors[index]} />
+                      <Cell key={entry.name} fill={pipelineColors[index % pipelineColors.length]} />
                     ))}
                   </Pie>
                   <text
@@ -309,7 +394,10 @@ export default function Dashboard() {
                 >
                   <span
                     className="mt-1 h-3 w-3 rounded-full"
-                    style={{ backgroundColor: pipelineColors[index] }}
+                    style={{ 
+                      backgroundColor: pipelineColors[index % pipelineColors.length],
+                      boxShadow: `0 0 0 2px ${pipelineColors[index % pipelineColors.length]}40`
+                    }}
                     aria-hidden="true"
                   />
                   <div>
@@ -322,11 +410,11 @@ export default function Dashboard() {
           </div>
         </section>
 
-        <section className="grid gap-4 md:grid-cols-3">
+        <section className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
           {highlightCards.map((card) => (
             <article
               key={card.title}
-              className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-6"
+              className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4 sm:p-6"
             >
               <span className={`inline-flex w-max items-center rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-indigo-700`}>
                 {card.title}
@@ -337,7 +425,7 @@ export default function Dashboard() {
           ))}
         </section>
 
-        <p className="text-center text-xs text-gray-500">
+          <p className="mt-4 text-center text-xs text-gray-500">
           This graph/chart is linked to Excel, and changes automatically based on data. Just left click on it and select "Edit Data".
         </p>
         </div>

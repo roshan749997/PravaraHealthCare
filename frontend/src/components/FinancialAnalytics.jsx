@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   Area,
   AreaChart,
@@ -38,12 +39,79 @@ const incomeBreakdown = [
   { label: "Investment", value: 74500 },
 ];
 
+const getExpenseIcon = (name) => {
+  const icons = {
+    Housing: (
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+      </svg>
+    ),
+    Transportation: (
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.125-.504 1.125-1.125V14.25m-9 5.25v-1.875c0-.621-.504-1.125-1.125-1.125H4.125c-.621 0-1.125.504-1.125 1.125v1.875m15.75 0v-1.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v1.875m-15.75 0h15.75" />
+      </svg>
+    ),
+    Entertainment: (
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 1 3 2.48Z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 0 0 .495-7.468 5.99 5.99 0 0 0-1.925 3.546 5.975 5.975 0 0 1-2.133-1.001A3.75 3.75 0 0 0 12 18Z" />
+      </svg>
+    ),
+    Food: (
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 7.51 6 8.473 6 9.708v2.292m6-4.5V8.25m6 4.5v-2.292c0-1.235-.845-2.198-1.976-2.542a48.019 48.019 0 0 0-1.897-.124c1.14.236 2.122.603 2.873 1.08M12 8.25h.008v.008H12V8.25Zm3 12h-6v-1.5c0-1.355.056-2.697.166-4.024C9.845 15.99 9 15.027 9 13.792V11.5m6 10.5v-1.5c0-1.355-.056-2.697-.166-4.024C14.845 15.99 15 15.027 15 13.792V11.5m-6 0c-1.355 0-2.697-.056-4.024-.166C4.845 11.49 4 10.527 4 9.292V7.04m6 4.5v6m6-6v6" />
+      </svg>
+    ),
+    Other: (
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+      </svg>
+    ),
+  };
+  return icons[name] || icons.Other;
+};
+
 const expenseBreakdown = [
-  { name: "Housing", value: 40, color: "#A020F0" },
-  { name: "Transportation", value: 25, color: "#D400FF" },
-  { name: "Entertainment", value: 20, color: "#FF00CC" },
-  { name: "Food", value: 10, color: "#A020F0" },
-  { name: "Other", value: 5, color: "#D400FF" },
+  { 
+    name: "Housing", 
+    value: 40, 
+    amount: "₹1,31,577",
+    color: "#F59E0B",
+    growth: "+5.2%",
+    description: "Rent, utilities, maintenance, and property-related expenses.",
+  },
+  { 
+    name: "Transportation", 
+    value: 25, 
+    amount: "₹82,236",
+    color: "#DC2626",
+    growth: "+12.8%",
+    description: "Vehicle costs, fuel, public transport, and commuting expenses.",
+  },
+  { 
+    name: "Entertainment", 
+    value: 20, 
+    amount: "₹65,789",
+    color: "#84CC16",
+    growth: "+18.5%",
+    description: "Leisure activities, dining out, subscriptions, and entertainment.",
+  },
+  { 
+    name: "Food", 
+    value: 10, 
+    amount: "₹32,894",
+    color: "#06B6D4",
+    growth: "+8.3%",
+    description: "Groceries, dining, food delivery, and household consumables.",
+  },
+  { 
+    name: "Other", 
+    value: 5, 
+    amount: "₹16,447",
+    color: "#6B7280",
+    growth: "+3.1%",
+    description: "Miscellaneous expenses, insurance, and other categories.",
+  },
 ];
 
 const forecastData = [
@@ -64,11 +132,39 @@ const metricCards = [
 ];
 
 const incomeTotal = incomeBreakdown.reduce((sum, item) => sum + item.value, 0);
+const expenseTotal = expenseBreakdown.reduce((sum, item) => {
+  const amount = parseFloat(item.amount.replace(/[₹,]/g, ''));
+  return sum + amount;
+}, 0);
 const expenseTotalTransactions = 130;
 const formatCurrency = (amount) =>
   `₹${amount.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 export default function FinancialAnalytics() {
+  const [isMobile, setIsMobile] = useState(false);
+  const [activeExpenseIndex, setActiveExpenseIndex] = useState(null);
+  const [selectedExpense, setSelectedExpense] = useState(null);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const handleExpenseClick = (data, index) => {
+    setActiveExpenseIndex(index);
+    setSelectedExpense(data);
+  };
+
+  const handleExpenseBoxClick = (expense, index) => {
+    setActiveExpenseIndex(index);
+    setSelectedExpense(expense);
+  };
   return (
     <section className="rounded-3xl border border-gray-200 bg-white shadow-sm">
       <header className="flex flex-col gap-2 border-b border-gray-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
@@ -84,64 +180,125 @@ export default function FinancialAnalytics() {
       </header>
 
       <div className="grid gap-4 px-4 py-4 lg:grid-cols-[2.1fr_0.9fr]">
-        <article className="rounded-2xl border border-gray-200 bg-white p-4">
+        <article className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-col">
-              <h3 className="text-xs font-semibold uppercase tracking-[0.28em] text-gray-500">Monthly Income & Expenses</h3>
-              <p className="text-[0.65rem] text-gray-500">Income vs expenses · Jan - Dec</p>
+              <h3 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.28em] text-gray-500">Monthly Income & Expenses</h3>
+              <p className="text-[0.65rem] sm:text-xs text-gray-500">Income vs expenses · Jan - Dec 2024</p>
             </div>
+            <span className="rounded-full border border-blue-200 bg-blue-50 px-2.5 sm:px-3 py-1 text-[0.65rem] sm:text-xs font-semibold text-blue-700 whitespace-nowrap">
+              Annual View
+            </span>
           </div>
-          <div className="mt-4 h-44">
-            <ResponsiveContainer>
+          <div className="mt-4 h-56 sm:h-64 md:h-72 lg:h-80">
+            <ResponsiveContainer width="100%" height="100%">
               <BarChart 
                 data={monthlySummary} 
-                margin={{ top: 5, right: 10, left: 0, bottom: 0 }}
+                margin={{ 
+                  top: 20, 
+                  right: 20, 
+                  left: isMobile ? -10 : 0, 
+                  bottom: isMobile ? 5 : 10 
+                }}
                 barCategoryGap="15%"
                 barGap={8}
               >
-                <CartesianGrid stroke="rgba(99, 102, 241, 0.2)" strokeDasharray="3 3" />
+                <defs>
+                  <linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#8B5CF6" stopOpacity={1} />
+                    <stop offset="50%" stopColor="#A78BFA" stopOpacity={0.9} />
+                    <stop offset="100%" stopColor="#8B5CF6" stopOpacity={0.8} />
+                  </linearGradient>
+                  <linearGradient id="expenseGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#10B981" stopOpacity={1} />
+                    <stop offset="50%" stopColor="#34D399" stopOpacity={0.9} />
+                    <stop offset="100%" stopColor="#10B981" stopOpacity={0.8} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid 
+                  stroke="rgba(99, 102, 241, 0.15)" 
+                  strokeDasharray="3 3" 
+                  vertical={false}
+                  strokeWidth={1}
+                />
                 <XAxis 
                   dataKey="month" 
                   stroke="#9CA3AF" 
-                  tick={{ fill: "#6B7280", fontSize: 10 }} 
-                  axisLine={false}
+                  tick={{ 
+                    fill: "#6B7280", 
+                    fontSize: isMobile ? 10 : 12,
+                    fontWeight: 500
+                  }}
+                  axisLine={{ stroke: "#E5E7EB", strokeWidth: 1 }}
+                  tickLine={{ stroke: "#E5E7EB" }}
                 />
                 <YAxis 
                   stroke="#9CA3AF" 
-                  tick={{ fill: "#6B7280", fontSize: 10 }} 
+                  tick={{ 
+                    fill: "#6B7280", 
+                    fontSize: isMobile ? 10 : 12,
+                    fontWeight: 500
+                  }}
                   tickFormatter={(value) => `₹${value}L`}
-                  axisLine={false}
+                  axisLine={{ stroke: "#E5E7EB", strokeWidth: 1 }}
+                  tickLine={{ stroke: "#E5E7EB" }}
+                  width={isMobile ? 45 : 60}
                 />
                 <Tooltip
+                  cursor={{ fill: "rgba(139, 92, 246, 0.1)" }}
+                  labelFormatter={(label) => `Month: ${label} 2024`}
                   formatter={(value, name) => {
                     const formattedValue = `₹${Number(value).toFixed(2)}L`;
-                    return [formattedValue, name === "income" ? "Income" : "Expenses"];
+                    const netValue = name === "income" 
+                      ? (value - monthlySummary.find(m => m.month === label)?.expense || 0).toFixed(2)
+                      : null;
+                    return [
+                      <div key="tooltip" className="space-y-1">
+                        <div className={`font-semibold ${name === "income" ? "text-purple-600" : "text-emerald-600"}`}>
+                          {formattedValue}
+                        </div>
+                        {netValue && (
+                          <div className="text-xs text-gray-500">Net: ₹{netValue}L</div>
+                        )}
+                      </div>,
+                      name === "income" ? "Income" : "Expenses"
+                    ];
                   }}
-                  labelFormatter={(label) => `${label} 2024`}
-                  contentStyle={{ 
-                    backgroundColor: "#FFFFFF", 
-                    borderColor: "#E5E7EB", 
-                    borderRadius: "12px", 
+                  contentStyle={{
+                    borderRadius: "0.75rem",
+                    border: "1px solid #E5E7EB",
+                    backgroundColor: "#FFFFFF",
                     color: "#111827",
-                    padding: "8px 12px"
+                    padding: "12px 16px",
+                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
                   }}
                   itemStyle={{ padding: "4px 0" }}
                 />
                 <Legend 
+                  verticalAlign="top"
+                  align="right"
                   iconType="circle" 
-                  wrapperStyle={{ color: "#111827", paddingTop: "5px", fontSize: "12px" }} 
+                  wrapperStyle={{ 
+                    paddingBottom: 12, 
+                    color: "#111827", 
+                    fontSize: "12px" 
+                  }} 
                 />
                 <Bar 
                   dataKey="income" 
                   name="Income" 
-                  fill="#6366F1" 
-                  radius={[4, 4, 0, 0]}
+                  fill="url(#incomeGradient)" 
+                  radius={[8, 8, 0, 0]}
+                  animationDuration={1500}
+                  animationEasing="ease-out"
                 />
                 <Bar 
                   dataKey="expense" 
                   name="Expenses" 
-                  fill="#10B981" 
-                  radius={[4, 4, 0, 0]}
+                  fill="url(#expenseGradient)" 
+                  radius={[8, 8, 0, 0]}
+                  animationDuration={1500}
+                  animationEasing="ease-out"
                 />
               </BarChart>
             </ResponsiveContainer>
@@ -162,33 +319,60 @@ export default function FinancialAnalytics() {
       </div>
 
       <div className="grid gap-4 border-t border-gray-200 px-4 py-4 lg:grid-cols-3">
-        <article className="rounded-2xl border border-gray-200 bg-white p-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-semibold uppercase tracking-[0.28em] text-gray-500">Income Overview</h3>
-            <span className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[0.6rem] uppercase tracking-[0.25em] text-gray-700">
-              Categories
+        <article className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.28em] text-gray-500">Income Overview</h3>
+            <span className="rounded-full border border-purple-200 bg-purple-50 px-2.5 py-1 text-[0.6rem] sm:text-xs uppercase tracking-[0.25em] text-purple-700">
+              3 Sources
             </span>
           </div>
-          <p className="mt-3 text-xl font-semibold">{formatCurrency(incomeTotal)}</p>
-          <div className="mt-3 space-y-2.5">
+          <div className="mb-4">
+            <p className="text-2xl sm:text-3xl font-bold text-purple-600">{formatCurrency(incomeTotal)}</p>
+            <p className="text-[0.65rem] sm:text-xs text-gray-500 mt-1">Total Annual Income</p>
+          </div>
+          <div className="mt-4 space-y-3">
             {incomeBreakdown.map((item, index) => {
               const percentage = Math.round((item.value / incomeTotal) * 100);
-              const colors = ["#6366F1", "#60A5FA", "#10B981"];
+              const colors = ["#8B5CF6", "#A78BFA", "#10B981"];
+              const color = colors[index % colors.length];
               return (
-                <div key={item.label} className="space-y-1.5">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-medium">{item.label}</span>
-                    <span className="font-semibold text-[0.65rem]">{formatCurrency(item.value)} ({percentage}%)</span>
+                <div 
+                  key={item.label} 
+                  className="group space-y-2 p-3 rounded-lg border border-gray-100 hover:border-gray-200 hover:bg-gray-50 transition-all cursor-pointer"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div 
+                        className="h-3 w-3 rounded-full"
+                        style={{ backgroundColor: color }}
+                      />
+                      <span className="text-xs sm:text-sm font-semibold text-gray-900">{item.label}</span>
+                    </div>
+                    <span className="font-bold text-xs sm:text-sm" style={{ color: color }}>
+                      {percentage}%
+                    </span>
                   </div>
-                  <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-gray-600">{formatCurrency(item.value)}</span>
+                    <span className="font-medium text-gray-500">{percentage}% of total</span>
+                  </div>
+                  <div className="h-2.5 w-full rounded-full bg-gray-100 overflow-hidden">
                     <div
-                      className="h-full rounded-full transition-all duration-500"
+                      className="h-full rounded-full transition-all duration-500 relative"
                       style={{
                         width: `${percentage}%`,
-                        backgroundColor: colors[index % colors.length],
-                        boxShadow: `0 0 0 ${colors[index % colors.length]}40`,
+                        backgroundColor: color,
+                        boxShadow: `0 0 8px ${color}60`,
                       }}
-                    />
+                    >
+                      <div 
+                        className="absolute inset-0 rounded-full"
+                        style={{
+                          background: `linear-gradient(90deg, ${color} 0%, ${color}CC 50%, ${color} 100%)`,
+                          animation: 'shimmer 2s infinite'
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
               );
@@ -196,19 +380,63 @@ export default function FinancialAnalytics() {
           </div>
         </article>
 
-        <article className="rounded-2xl border border-gray-200 bg-white p-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-semibold uppercase tracking-[0.28em] text-gray-500">Expense Analysis</h3>
-            <span className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[0.6rem] uppercase tracking-[0.25em] text-gray-700">
-              Transactions
+        <article className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 overflow-visible">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.28em] text-gray-500">Expense Analysis</h3>
+            <span className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[0.6rem] sm:text-xs uppercase tracking-[0.25em] text-gray-700">
+              {expenseTotalTransactions} Transactions
             </span>
           </div>
-          <div className="mt-4 h-36">
-            <ResponsiveContainer>
+          <div className="mt-4 h-48 sm:h-56 md:h-64 overflow-visible relative">
+            <ResponsiveContainer width="100%" height="100%">
               <PieChart>
+                <defs>
+                  {expenseBreakdown.map((item, index) => (
+                    <g key={`expense-defs-${index}`}>
+                      <linearGradient id={`expense-gradient-${index}`} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={item.color} stopOpacity={1} />
+                        <stop offset="100%" stopColor={item.color} stopOpacity={0.7} />
+                      </linearGradient>
+                      <filter id={`expense-glow-${index}`}>
+                        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                        <feMerge>
+                          <feMergeNode in="coloredBlur"/>
+                          <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                      </filter>
+                    </g>
+                  ))}
+                </defs>
                 <Tooltip
-                  formatter={(value, name) => [`${value}%`, name]}
-                  contentStyle={{ backgroundColor: "#FFFFFF", borderColor: "#E5E7EB", borderRadius: "12px", color: "#111827" }}
+                  content={({ active, payload }) => {
+                    if (!active || !payload || !payload[0]) return null;
+                    const item = expenseBreakdown.find(d => d.value === payload[0].value);
+                    if (!item) return null;
+                    
+                    return (
+                      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xl" style={{ minWidth: "220px" }}>
+                        <div className="space-y-3">
+                          <div className="font-semibold text-lg border-b border-gray-200 pb-2" style={{ color: item.color }}>
+                            {item.name}
+                          </div>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between items-center gap-4">
+                              <span className="text-gray-600">Percentage:</span>
+                              <span className="font-semibold text-gray-900">{item.value}%</span>
+                            </div>
+                            <div className="flex justify-between items-center gap-4">
+                              <span className="text-gray-600">Amount:</span>
+                              <span className="font-semibold text-gray-900">{item.amount}</span>
+                            </div>
+                            <div className="flex justify-between items-center gap-4">
+                              <span className="text-gray-600">Growth:</span>
+                              <span className="font-semibold text-emerald-600">{item.growth}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }}
                 />
                 <Pie
                   data={expenseBreakdown}
@@ -216,121 +444,271 @@ export default function FinancialAnalytics() {
                   nameKey="name"
                   cx="50%"
                   cy="50%"
-                  innerRadius="55%"
-                  outerRadius="90%"
+                  innerRadius={isMobile ? 45 : 70}
+                  outerRadius={isMobile ? 90 : 120}
                   strokeWidth={0}
+                  startAngle={90}
+                  endAngle={-270}
+                  paddingAngle={3}
+                  onClick={handleExpenseClick}
+                  activeIndex={activeExpenseIndex}
+                  activeShape={{
+                    outerRadius: isMobile ? 100 : 135,
+                    innerRadius: isMobile ? 40 : 65,
+                  }}
+                  animationDuration={2000}
+                  animationEasing="ease-out"
                 >
-                  {expenseBreakdown.map((entry) => (
-                    <Cell key={entry.name} fill={entry.color} />
+                  {expenseBreakdown.map((entry, index) => (
+                    <Cell 
+                      key={entry.name} 
+                      fill={`url(#expense-gradient-${index})`}
+                      stroke={entry.color}
+                      strokeWidth={activeExpenseIndex === index ? 4 : 2}
+                      style={{
+                        filter: activeExpenseIndex === index ? `url(#expense-glow-${index})` : 'drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.15))',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                      }}
+                    />
                   ))}
                 </Pie>
-                <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fill="#111827" fontSize="18" fontWeight="600">
-                  {expenseTotalTransactions} Total
+                <text 
+                  x="50%" 
+                  y="50%" 
+                  dominantBaseline="middle" 
+                  textAnchor="middle" 
+                  fill="#111827" 
+                  fontSize={isMobile ? 16 : 20} 
+                  fontWeight="600"
+                >
+                  {selectedExpense ? (
+                    <tspan x="50%" dy="-0.5em">{selectedExpense.value}%</tspan>
+                  ) : (
+                    <>
+                      <tspan x="50%" dy="-0.5em">{formatCurrency(expenseTotal)}</tspan>
+                      <tspan x="50%" dy="1.2em" fontSize={isMobile ? 10 : 12} fill="#6B7280">Total</tspan>
+                    </>
+                  )}
                 </text>
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div className="mt-4 grid gap-1.5 text-[0.65rem]">
-            {expenseBreakdown.map((item) => (
-              <div key={item.name} className="flex items-center justify-between">
+          <div className="mt-4 grid grid-cols-2 sm:grid-cols-1 gap-2 sm:gap-1.5 text-[0.65rem] sm:text-xs">
+            {expenseBreakdown.map((item, index) => (
+              <div 
+                key={item.name} 
+                className={`flex items-center justify-between p-2 rounded-lg transition-colors cursor-pointer ${
+                  activeExpenseIndex === index ? 'bg-gray-50' : 'hover:bg-gray-50'
+                }`}
+                onClick={() => handleExpenseBoxClick(item, index)}
+              >
                 <span className="inline-flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />
-                  {item.name}
+                  <span 
+                    className="h-2.5 w-2.5 rounded-full" 
+                    style={{ 
+                      backgroundColor: item.color,
+                      boxShadow: activeExpenseIndex === index ? `0 0 0 2px ${item.color}40` : 'none'
+                    }} 
+                  />
+                  <span className="font-medium">{item.name}</span>
                 </span>
-                <span>{item.value}%</span>
+                <span className="font-semibold">{item.value}%</span>
               </div>
             ))}
           </div>
         </article>
 
-        <article className="rounded-2xl border border-gray-200 bg-white p-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-semibold uppercase tracking-[0.28em] text-gray-500">Financial Forecast</h3>
-            <span className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[0.6rem] uppercase tracking-[0.25em] text-gray-700">
-              May focus
+        <article className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.28em] text-gray-500">Financial Forecast</h3>
+            <span className="rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-[0.6rem] sm:text-xs uppercase tracking-[0.25em] text-blue-700">
+              8-Month Projection
             </span>
           </div>
-          <div className="mt-4 h-36">
-            <ResponsiveContainer>
-              <LineChart data={forecastData} margin={{ top: 5, right: 5, left: -10, bottom: 0 }}>
+          <div className="mt-4 h-48 sm:h-56 md:h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart 
+                data={forecastData} 
+                margin={{ 
+                  top: 20, 
+                  right: 20, 
+                  left: isMobile ? -10 : 0, 
+                  bottom: isMobile ? 5 : 10 
+                }}
+              >
                 <defs>
-                  <linearGradient id="forecastGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#6366F1" stopOpacity={0.3} />
-                    <stop offset="100%" stopColor="#60A5FA" stopOpacity={0.1} />
+                  <linearGradient id="forecastIncomeGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#8B5CF6" stopOpacity={0.4} />
+                    <stop offset="100%" stopColor="#8B5CF6" stopOpacity={0.05} />
+                  </linearGradient>
+                  <linearGradient id="forecastExpenseGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#10B981" stopOpacity={0.4} />
+                    <stop offset="100%" stopColor="#10B981" stopOpacity={0.05} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid stroke="rgba(99, 102, 241, 0.2)" strokeDasharray="3 3" />
+                <CartesianGrid 
+                  stroke="rgba(99, 102, 241, 0.15)" 
+                  strokeDasharray="3 3" 
+                  vertical={false}
+                  strokeWidth={1}
+                />
                 <XAxis 
                   dataKey="month" 
                   stroke="#9CA3AF" 
-                  tick={{ fill: "#6B7280", fontSize: 10 }} 
-                  axisLine={false}
+                  tick={{ 
+                    fill: "#6B7280", 
+                    fontSize: isMobile ? 10 : 12,
+                    fontWeight: 500
+                  }}
+                  axisLine={{ stroke: "#E5E7EB", strokeWidth: 1 }}
+                  tickLine={{ stroke: "#E5E7EB" }}
                 />
                 <YAxis 
                   stroke="#9CA3AF" 
-                  tick={{ fill: "#6B7280", fontSize: 10 }} 
+                  tick={{ 
+                    fill: "#6B7280", 
+                    fontSize: isMobile ? 10 : 12,
+                    fontWeight: 500
+                  }}
                   tickFormatter={(value) => `₹${value}L`}
-                  axisLine={false}
+                  axisLine={{ stroke: "#E5E7EB", strokeWidth: 1 }}
+                  tickLine={{ stroke: "#E5E7EB" }}
+                  width={isMobile ? 45 : 60}
                 />
                 <Tooltip
-                  formatter={(value, name) => [`₹${Number(value).toFixed(1)}L`, name === "income" ? "Income" : "Expenses"]}
-                  contentStyle={{ 
-                    backgroundColor: "#FFFFFF", 
-                    borderColor: "#E5E7EB", 
-                    borderRadius: "12px", 
-                    color: "#111827",
-                    padding: "8px 12px"
+                  cursor={{ stroke: "#6366F1", strokeWidth: 1, strokeDasharray: "5 5" }}
+                  labelFormatter={(label) => `Month: ${label}`}
+                  content={({ active, payload, label }) => {
+                    if (!active || !payload || !payload.length) return null;
+                    const monthData = forecastData.find(d => d.month === label);
+                    const net = monthData ? (monthData.income - monthData.expense).toFixed(1) : 0;
+                    
+                    return (
+                      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xl" style={{ minWidth: "200px" }}>
+                        <div className="space-y-2">
+                          <div className="font-semibold text-sm border-b border-gray-200 pb-2 text-gray-900">
+                            Month: {label}
+                          </div>
+                          {payload.map((entry, index) => (
+                            <div key={index} className="flex items-center justify-between gap-4">
+                              <div className="flex items-center gap-2">
+                                <div 
+                                  className="h-3 w-3 rounded-full" 
+                                  style={{ backgroundColor: entry.color }}
+                                />
+                                <span className="text-sm text-gray-600">{entry.name}:</span>
+                              </div>
+                              <div className="text-right">
+                                <div 
+                                  className="text-sm font-semibold"
+                                  style={{ color: entry.color }}
+                                >
+                                  ₹{Number(entry.value).toFixed(1)}L
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                          <div className="pt-2 border-t border-gray-200">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm text-gray-600">Net:</span>
+                              <span className={`text-sm font-semibold ${parseFloat(net) >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                                ₹{net}L
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
                   }}
-                  itemStyle={{ padding: "4px 0" }}
                 />
-                <Legend iconType="line" wrapperStyle={{ color: "#111827", fontSize: "12px", paddingTop: "5px" }} />
+                <Legend 
+                  verticalAlign="top"
+                  align="right"
+                  iconType="line" 
+                  wrapperStyle={{ 
+                    color: "#111827", 
+                    fontSize: "12px", 
+                    paddingBottom: 12 
+                  }} 
+                />
                 <ReferenceLine 
                   x="May" 
-                  stroke="#9CA3AF" 
-                  strokeWidth={1.5} 
-                  strokeDasharray="3 3"
+                  stroke="#F59E0B" 
+                  strokeWidth={2} 
+                  strokeDasharray="5 5"
                   label={{ 
-                    value: "May", 
+                    value: "May Focus", 
                     position: "top", 
-                    fill: "#111827",
+                    fill: "#F59E0B",
                     fontSize: 11,
                     fontWeight: 600,
-                    backgroundColor: "transparent",
-                    padding: "0",
-                    borderRadius: "0"
                   }}
                 />
                 <Area
                   type="monotone"
                   dataKey="income"
                   stroke="none"
-                  fill="url(#forecastGradient)"
-                  fillOpacity={0.3}
+                  fill="url(#forecastIncomeGradient)"
+                  fillOpacity={0.4}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="expense"
+                  stroke="none"
+                  fill="url(#forecastExpenseGradient)"
+                  fillOpacity={0.4}
                 />
                 <Line 
                   type="monotone" 
                   dataKey="income" 
                   name="Income" 
-                  stroke="#6366F1" 
-                  strokeWidth={3}
-                  dot={{ fill: "#6366F1", r: 4, strokeWidth: 2, stroke: "#FFFFFF" }}
-                  activeDot={{ r: 6, fill: "#6366F1" }}
+                  stroke="#8B5CF6" 
+                  strokeWidth={isMobile ? 2.5 : 3}
+                  dot={{ 
+                    fill: "#8B5CF6", 
+                    r: isMobile ? 4 : 5, 
+                    strokeWidth: 2, 
+                    stroke: "#FFFFFF" 
+                  }}
+                  activeDot={{ 
+                    r: isMobile ? 6 : 7, 
+                    fill: "#8B5CF6",
+                    strokeWidth: 2,
+                    stroke: "#FFFFFF"
+                  }}
+                  animationDuration={1500}
+                  animationEasing="ease-out"
                 />
                 <Line 
                   type="monotone" 
                   dataKey="expense" 
                   name="Expenses" 
                   stroke="#10B981" 
-                  strokeWidth={3}
-                  dot={{ fill: "#10B981", r: 4, strokeWidth: 2, stroke: "#FFFFFF" }}
-                  activeDot={{ r: 6, fill: "#10B981" }}
+                  strokeWidth={isMobile ? 2.5 : 3}
+                  dot={{ 
+                    fill: "#10B981", 
+                    r: isMobile ? 4 : 5, 
+                    strokeWidth: 2, 
+                    stroke: "#FFFFFF" 
+                  }}
+                  activeDot={{ 
+                    r: isMobile ? 6 : 7, 
+                    fill: "#10B981",
+                    strokeWidth: 2,
+                    stroke: "#FFFFFF"
+                  }}
+                  animationDuration={1500}
+                  animationEasing="ease-out"
                 />
               </LineChart>
             </ResponsiveContainer>
           </div>
-          <p className="mt-3 text-[0.65rem] leading-relaxed text-gray-500">
-            Expecting deficit in May. Consider saving more in April or optimizing leisure expenses.
-          </p>
+          <div className="mt-4 p-3 rounded-lg bg-amber-50 border border-amber-200">
+            <p className="text-[0.65rem] sm:text-xs leading-relaxed text-amber-800">
+              <span className="font-semibold">Forecast Alert:</span> Expecting potential deficit in May. Consider saving more in April or optimizing leisure expenses to maintain positive cash flow.
+            </p>
+          </div>
         </article>
       </div>
     </section>
