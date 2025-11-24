@@ -506,10 +506,10 @@ export default function Dashboard() {
                       </div>
                     ) : (
                       <div className="space-y-0.5 sm:space-y-1">
-                        <div className="text-base sm:text-xl lg:text-2xl font-bold text-gray-900 leading-tight">
+                        <div className="text-sm sm:text-lg lg:text-xl font-bold text-gray-900 leading-tight">
                           {totalEmployees}
                         </div>
-                        <div className="text-[0.55rem] sm:text-[0.65rem] lg:text-xs font-semibold text-gray-600 leading-tight">
+                        <div className="text-[0.5rem] sm:text-[0.6rem] lg:text-[0.65rem] font-semibold text-gray-600 leading-tight">
                           TOTAL EMPLOYEES
                         </div>
                       </div>
