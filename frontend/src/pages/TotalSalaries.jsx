@@ -1,13 +1,75 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Navbar from '../components/Navbar.jsx'
 import Footer from '../components/Footer.jsx'
 import { NavLink } from 'react-router-dom'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, Legend } from 'recharts'
+import { api, formatCurrency } from '../utils/api.js'
 
 // Employee Distribution colors
 const employeeColors = ["#F59E0B", "#DC2626", "#84CC16", "#06B6D4", "#6B7280"];
 
-const totalSalaryData = [
+export default function TotalSalaries() {
+  const [totalSalaryData, setTotalSalaryData] = useState([]);
+  const [allowanceSummary, setAllowanceSummary] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('')
+  const [sortBy, setSortBy] = useState('name')
+  const [sortOrder, setSortOrder] = useState('asc')
+  const [filterDept, setFilterDept] = useState('All')
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const currentDate = new Date();
+      const currentMonth = currentDate.getMonth() + 1;
+      const currentYear = currentDate.getFullYear();
+
+      const [employeesRes, allowancesRes, summaryRes] = await Promise.all([
+        api.getEmployees({ status: 'Active' }),
+        api.getAllowances({ month: currentMonth, year: currentYear }),
+        api.getAllowanceSummary({ month: currentMonth, year: currentYear })
+      ]);
+
+      if (employeesRes.success && allowancesRes.success) {
+        const employees = employeesRes.data.employees;
+        const allowances = allowancesRes.data;
+        
+        // Combine employee data with allowances
+        const combinedData = employees.map(emp => {
+          const allowance = allowances.find(a => 
+            a.employeeId._id === emp._id || a.employeeId === emp._id
+          );
+          
+          return {
+            id: emp.employeeId,
+            name: emp.name,
+            monthlySalary: formatCurrency(emp.salary.monthly),
+            mobileRecharge: formatCurrency(allowance?.mobileRecharge || 0),
+            fuelExpense: `${formatCurrency(allowance?.petrolDiesel?.amount || 0)} · ${allowance?.petrolDiesel?.vehicleNumber || 'N/A'}`,
+            monthlyIncentive: formatCurrency(allowance?.incentive || 0),
+            giftVoucher: formatCurrency(allowance?.gifts || 0),
+            department: emp.department,
+            _id: emp._id
+          };
+        });
+        
+        setTotalSalaryData(combinedData);
+      }
+
+      if (summaryRes.success) {
+        setAllowanceSummary(summaryRes.data);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const mockTotalSalaryData = [
   {
     id: 'EMP-001',
     name: 'Dr. Kavita Kulkarni',
@@ -111,14 +173,12 @@ const totalSalaryData = [
 ]
 
 const parseCurrency = (value) => Number(value.replace(/[^0-9.]/g, ''))
-const formatCurrency = (value) =>
-  new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value)
 
 const totalMonthlySalary = totalSalaryData.reduce((sum, employee) => sum + parseCurrency(employee.monthlySalary), 0)
-const totalRecharge = totalSalaryData.reduce((sum, employee) => sum + parseCurrency(employee.mobileRecharge), 0)
-const totalIncentives = totalSalaryData.reduce((sum, employee) => sum + parseCurrency(employee.monthlyIncentive), 0)
-const totalVouchers = totalSalaryData.reduce((sum, employee) => sum + parseCurrency(employee.giftVoucher), 0)
-const totalFuel = totalSalaryData.reduce((sum, employee) => sum + parseCurrency(employee.fuelExpense.split('·')[0]), 0)
+  const totalRecharge = allowanceSummary?.totalRecharge || totalSalaryData.reduce((sum, employee) => sum + parseCurrency(employee.mobileRecharge), 0)
+  const totalIncentives = allowanceSummary?.totalIncentive || totalSalaryData.reduce((sum, employee) => sum + parseCurrency(employee.monthlyIncentive), 0)
+  const totalVouchers = allowanceSummary?.totalGifts || totalSalaryData.reduce((sum, employee) => sum + parseCurrency(employee.giftVoucher), 0)
+  const totalFuel = allowanceSummary?.totalPetrol || totalSalaryData.reduce((sum, employee) => sum + parseCurrency(employee.fuelExpense.split('·')[0]), 0)
 const totalAllowances = totalRecharge + totalIncentives + totalVouchers + totalFuel
 
 // Compensation breakdown chart data
@@ -151,12 +211,6 @@ const departmentChartData = Object.values(departmentCompensation).map((dept, idx
   avg: Math.round(dept.total / dept.count),
   color: employeeColors[idx % employeeColors.length],
 }));
-
-export default function TotalSalaries() {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [sortBy, setSortBy] = useState('name')
-  const [sortOrder, setSortOrder] = useState('asc')
-  const [filterDept, setFilterDept] = useState('All')
 
   const departments = ['All', ...new Set(totalSalaryData.map(emp => emp.department))]
 
@@ -201,6 +255,29 @@ export default function TotalSalaries() {
       setSortOrder('asc')
     }
   }
+
+  const handleExportTotalSalaries = () => {
+    try {
+      const csvHeader = 'Employee ID,Name,Department,Monthly Salary,Mobile Recharge,Petrol/Diesel,Vehicle Number,Incentive,Gifts\n';
+      const csvRows = filteredAndSorted.map(emp => {
+        const fuelParts = emp.fuelExpense.split('·');
+        const fuelAmount = fuelParts[0]?.trim() || '₹0';
+        const vehicleNumber = fuelParts[1]?.trim() || 'N/A';
+        return `${emp.id},"${emp.name}",${emp.department},${emp.monthlySalary},${emp.mobileRecharge},${fuelAmount},"${vehicleNumber}",${emp.monthlyIncentive},${emp.giftVoucher}`;
+      }).join('\n');
+      
+      const blob = new Blob([csvHeader + csvRows], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `total_salaries_export_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      alert('Error exporting total salaries data');
+    }
+  }
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-50 text-gray-900">
       <Navbar />
@@ -216,7 +293,7 @@ export default function TotalSalaries() {
                 Comprehensive compensation breakdown
               </h1>
               <p className="mt-3 max-w-2xl text-xs text-gray-600 sm:mt-4 sm:text-sm">
-                Audit every salary component including allowances, benefits, vehicle reimbursements, and vouchers. Keep transparency high and approvals swift for Pravara Health Care leadership.
+                Complete breakdown of all employee compensation: Salary, Incentives, Gifts, Petrol/Diesel expenses, and Mobile Recharge. Track every component for accurate financial management.
               </p>
               <div className="mt-5 flex flex-wrap gap-2.5 sm:mt-6 sm:gap-3">
                 <NavLink
@@ -228,16 +305,21 @@ export default function TotalSalaries() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 8.25 3 12l3.75 3.75M3 12h18" />
                   </svg>
                 </NavLink>
-                <button className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-100 sm:px-4 sm:text-sm">
-                  Export summary
+                <button 
+                  onClick={handleExportTotalSalaries}
+                  className="inline-flex items-center gap-2 rounded-md border border-green-600 px-3 py-2 text-xs font-semibold text-green-600 hover:bg-green-50 sm:px-4 sm:text-sm"
+                >
+                  📥 Export CSV
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 20.25h12M12 3.75v12m0 0 3.75-3.75M12 15.75 8.25 12" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
                   </svg>
                 </button>
               </div>
             </div>
             <div className="grid gap-3 rounded-2xl border border-gray-200 bg-white p-4 sm:gap-4 sm:p-5">
-              {[{ label: 'Monthly salary payout', value: formatCurrency(totalMonthlySalary), detail: '+5.1% QoQ' }, { label: 'Monthly allowances', value: formatCurrency(totalRecharge + totalIncentives + totalVouchers + totalFuel), detail: 'All reimbursements combined' }, { label: 'Fuel reimbursements', value: formatCurrency(totalFuel), detail: 'With vehicle tracking' }].map((stat) => (
+              {loading ? (
+                <div className="col-span-3 text-center py-4">Loading...</div>
+              ) : [{ label: 'Monthly salary payout', value: formatCurrency(totalMonthlySalary), detail: `${totalSalaryData.length} employees` }, { label: 'Monthly allowances', value: formatCurrency(totalAllowances), detail: 'All reimbursements combined' }, { label: 'Fuel reimbursements', value: formatCurrency(totalFuel), detail: 'With vehicle tracking' }].map((stat) => (
                 <div key={stat.label} className="rounded-xl border border-gray-200 bg-gray-50 p-3 sm:p-4">
                   <p className="text-[0.6rem] font-medium uppercase tracking-[0.3em] text-gray-500 sm:text-xs">{stat.label}</p>
                   <p className="mt-2 text-xl font-semibold sm:text-2xl">{stat.value}</p>
@@ -251,7 +333,7 @@ export default function TotalSalaries() {
         <section className="grid gap-3 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 sm:gap-4">
           {[
             { 
-              label: 'Recharge support', 
+              label: 'Mobile Recharge', 
               value: formatCurrency(totalRecharge),
               color: employeeColors[0],
               icon: (
@@ -261,7 +343,7 @@ export default function TotalSalaries() {
               )
             }, 
             { 
-              label: 'Monthly incentives', 
+              label: 'Incentive', 
               value: formatCurrency(totalIncentives),
               color: employeeColors[1],
               icon: (
@@ -271,7 +353,7 @@ export default function TotalSalaries() {
               )
             }, 
             { 
-              label: 'Gift vouchers', 
+              label: 'Gifts', 
               value: formatCurrency(totalVouchers),
               color: employeeColors[2],
               icon: (
@@ -463,9 +545,9 @@ export default function TotalSalaries() {
                     </div>
                   </th>
                   <th scope="col" className="px-4 py-3 sm:px-6 sm:py-4">Mobile Recharge</th>
-                  <th scope="col" className="px-4 py-3 sm:px-6 sm:py-4">Fuel & Vehicle</th>
-                  <th scope="col" className="px-4 py-3 sm:px-6 sm:py-4">Monthly Incentive</th>
-                  <th scope="col" className="px-4 py-3 sm:px-6 sm:py-4">Gift Vouchers</th>
+                  <th scope="col" className="px-4 py-3 sm:px-6 sm:py-4">Petrol/Diesel</th>
+                  <th scope="col" className="px-4 py-3 sm:px-6 sm:py-4">Incentive</th>
+                  <th scope="col" className="px-4 py-3 sm:px-6 sm:py-4">Gifts</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 text-xs sm:text-sm">

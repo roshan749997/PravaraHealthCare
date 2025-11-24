@@ -2,21 +2,22 @@ import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar.jsx";
 import Footer from "../components/Footer.jsx";
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { api, formatCurrency } from "../utils/api.js";
 
 const topLineData = [
-  { month: "Jan", totalSales: 320 },
-  { month: "Feb", totalSales: 360 },
-  { month: "Mar", totalSales: 410 },
-  { month: "Apr", totalSales: 455 },
-  { month: "May", totalSales: 520 },
-  { month: "Jun", totalSales: 565 },
+  { month: "Jan", totalExpenses: 8.2 },
+  { month: "Feb", totalExpenses: 8.5 },
+  { month: "Mar", totalExpenses: 8.9 },
+  { month: "Apr", totalExpenses: 9.1 },
+  { month: "May", totalExpenses: 8.7 },
+  { month: "Jun", totalExpenses: 8.95 },
 ];
 
 const summaryStats = [
-  { label: "Revenue", value: "₹320.4K", trend: "+8.2%", trendTone: "text-[#A020F0]", progress: 78, progressTone: "bg-[#A020F0]" },
-  { label: "Orders", value: "31.6K", trend: "+3.4%", trendTone: "text-[#D400FF]", progress: 64, progressTone: "bg-[#D400FF]" },
-  { label: "Avg. Order Value", value: "₹4.2K", trend: "+₹0.12K", trendTone: "text-[#FF00CC]", progress: 55, progressTone: "bg-[#FF00CC]" },
-  { label: "New Cust. Per Mo", value: "12.6K", trend: "+1.9K", trendTone: "text-[#A020F0]", progress: 82, progressTone: "bg-[#A020F0]" },
+  { label: "Total Salary", value: "₹8.95L", trend: "+5.2%", trendTone: "text-[#A020F0]", progress: 78, progressTone: "bg-[#A020F0]" },
+  { label: "Incentives", value: "₹95K", trend: "+8.4%", trendTone: "text-[#D400FF]", progress: 64, progressTone: "bg-[#D400FF]" },
+  { label: "Gifts", value: "₹20K", trend: "+₹2K", trendTone: "text-[#FF00CC]", progress: 55, progressTone: "bg-[#FF00CC]" },
+  { label: "Mobile Recharge", value: "₹7.5K", trend: "+₹500", trendTone: "text-[#A020F0]", progress: 82, progressTone: "bg-[#A020F0]" },
 ];
 
 const funnelStages = [
@@ -84,54 +85,53 @@ const areaData = [
 
 const kpiCards = [
   {
-    title: "Conversion Rate",
-    value: "3.8%",
-    helper: "+0.6pp vs last month",
+    title: "Total Salary Payout",
+    value: "₹8.95L",
+    helper: "+5.2% vs last month",
     gradient: "from-[#A020F0] via-[#D400FF] to-[#FF00CC]",
-    badge: "Healthy",
+    badge: "On Track",
     badgeTone: "bg-white/20 text-white",
     color: "#F59E0B", // Orange - Employee Distribution color
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 3.75 4.5 12h6l-3.75 8.25L19.5 12h-6l3.75-8.25-5.25 6" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
       </svg>
     ),
   },
   {
-    title: "Returning Customers",
-    value: "58%",
-    helper: "+4% QoQ",
+    title: "Total Incentives",
+    value: "₹95K",
+    helper: "+8.4% vs last month",
     gradient: "from-[#D400FF] via-[#A020F0] to-[#FF00CC]",
     badge: "Growing",
     badgeTone: "bg-white/20 text-white",
     color: "#DC2626", // Red - Employee Distribution color
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75v10.5m0 0 3.75-3.75M12 17.25 8.25 13.5M18 12a6 6 0 1 1-12 0 6 6 0 0 1 12 0Z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
       </svg>
     ),
   },
   {
-    title: "Average Basket",
-    value: "₹148.90",
-    helper: "+₹12 vs goal",
+    title: "Total Gifts",
+    value: "₹20K",
+    helper: "+₹2K vs last month",
     gradient: "from-[#FF00CC] via-[#D400FF] to-[#A020F0]",
     badge: "Above target",
     badgeTone: "bg-white/20 text-white",
     color: "#84CC16", // Lime Green - Employee Distribution color
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2.25l1.5 12.75A2.25 2.25 0 0 0 8.99 18h6.02a2.25 2.25 0 0 0 2.24-2.25L18.75 6H5.25" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 21a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM8.25 21a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 11.25v-1.5a2.25 2.25 0 0 0-1.5-2.143l-5-1.429a2.25 2.25 0 0 0-1.5 0l-5 1.429a2.25 2.25 0 0 0-1.5 2.143v1.5m9 0h.008v.008H12v-.008Zm-9 0H3m9 0v1.5m0 0v4.5m0-4.5H3m9 4.5v1.5m0 0v4.5m0-4.5H3m9 0h.008v.008H12V21Zm-9 0h1.5m13.5 0h1.5" />
       </svg>
     ),
   },
   {
-    title: "Total Revenue",
-    value: "₹895.4K",
-    helper: "+12.5% vs last month",
+    title: "Total Expenses",
+    value: "₹3.28L",
+    helper: "+6.3% vs last month",
     gradient: "from-[#06B6D4] via-[#06B6D4] to-[#06B6D4]",
-    badge: "Excellent",
+    badge: "Controlled",
     badgeTone: "bg-white/20 text-white",
     color: "#06B6D4", // Cyan - Employee Distribution color
     icon: (
@@ -247,77 +247,103 @@ const departmentDistribution = [
 
 const totalEmployees = departmentDistribution.reduce((sum, dept) => sum + dept.employees, 0);
 
-// Revenue by Category Distribution
-const revenueByCategory = [
+// Expense Category Distribution
+const expenseByCategory = [
   {
-    name: "Consultation",
-    value: 42,
-    amount: "₹376.1K",
+    name: "Salary",
+    value: 65,
+    amount: "₹5.82L",
     color: "#8B5CF6",
-    growth: "+18%",
+    growth: "+5.2%",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h4.125M8.25 8.25l2.25-2.25m0 0 2.25 2.25m-2.25-2.25v11.25" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
       </svg>
     ),
-    description: "Doctor consultations, follow-ups, and medical advice services.",
+    description: "Monthly salary payments to all employees.",
   },
   {
-    name: "Diagnostics",
-    value: 28,
-    amount: "₹250.7K",
+    name: "Incentive",
+    value: 15,
+    amount: "₹1.34L",
     color: "#EC4899",
-    growth: "+12%",
+    growth: "+8.4%",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 0 1 4.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0 1 12 15a9.065 9.065 0 0 0-6.23-.693L5 14.5m14.8.8 1.402 1.402c1.232 1.232 1.232 3.228 0 4.46s-3.228 1.232-4.46 0l-1.403-1.402m-7.007 4.007L3 20.25M14.25 3.104l-4.5-4.5" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
       </svg>
     ),
-    description: "Lab tests, imaging, and diagnostic procedures revenue.",
+    description: "Performance-based incentives and bonuses.",
   },
   {
-    name: "Pharmacy",
-    value: 18,
-    amount: "₹161.2K",
-    color: "#10B981",
-    growth: "+25%",
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 0 1 4.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0 1 12 15a9.065 9.065 0 0 0-6.23-.693L5 14.5m14.8.8 1.402 1.402c1.232 1.232 1.232 3.228 0 4.46s-3.228 1.232-4.46 0l-1.403-1.402m-7.007 4.007L3 20.25M14.25 3.104l-4.5-4.5" />
-      </svg>
-    ),
-    description: "Medicine sales and pharmaceutical products revenue.",
-  },
-  {
-    name: "Surgery",
+    name: "Office Rent",
     value: 8,
     amount: "₹71.6K",
-    color: "#F59E0B",
-    growth: "+8%",
+    color: "#10B981",
+    growth: "+2.5%",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
       </svg>
     ),
-    description: "Surgical procedures and operation theater revenue.",
+    description: "Monthly office space rental expenses.",
   },
   {
-    name: "Other Services",
-    value: 4,
-    amount: "₹35.8K",
-    color: "#6366F1",
-    growth: "+5%",
+    name: "Petrol/Diesel",
+    value: 6,
+    amount: "₹53.7K",
+    color: "#F59E0B",
+    growth: "+12.8%",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.125-.504 1.125-1.125V14.25m-9 5.25v-1.875c0-.621-.504-1.125-1.125-1.125H4.125c-.621 0-1.125.504-1.125 1.125v1.875m15.75 0v-1.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v1.875m-15.75 0h15.75" />
       </svg>
     ),
-    description: "Emergency services, ambulance, and other miscellaneous revenue.",
+    description: "Vehicle fuel expenses and reimbursements.",
+  },
+  {
+    name: "Mobile Recharge",
+    value: 3,
+    amount: "₹26.8K",
+    color: "#6366F1",
+    growth: "+6.7%",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+      </svg>
+    ),
+    description: "Employee mobile phone recharge expenses.",
+  },
+  {
+    name: "Light Bill",
+    value: 2,
+    amount: "₹17.9K",
+    color: "#06B6D4",
+    growth: "+4.2%",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+      </svg>
+    ),
+    description: "Electricity and utility bills.",
+  },
+  {
+    name: "Gifts",
+    value: 1,
+    amount: "₹8.9K",
+    color: "#84CC16",
+    growth: "+10%",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 11.25v-1.5a2.25 2.25 0 0 0-1.5-2.143l-5-1.429a2.25 2.25 0 0 0-1.5 0l-5 1.429a2.25 2.25 0 0 0-1.5 2.143v1.5m9 0h.008v.008H12v-.008Zm-9 0H3m9 0v1.5m0 0v4.5m0-4.5H3m9 4.5v1.5m0 0v4.5m0-4.5H3m9 0h.008v.008H12V21Zm-9 0h1.5m13.5 0h1.5" />
+      </svg>
+    ),
+    description: "Employee gifts and vouchers.",
   },
 ];
 
-const totalRevenue = revenueByCategory.reduce((sum, cat) => {
-  const amount = parseFloat(cat.amount.replace(/[₹,K]/g, ''));
+const totalExpenses = expenseByCategory.reduce((sum, cat) => {
+  const amount = parseFloat(cat.amount.replace(/[₹,L]/g, '')) * (cat.amount.includes('L') ? 100000 : 1000);
   return sum + amount;
 }, 0);
 
@@ -327,6 +353,11 @@ export default function Dashboard() {
   const [selectedDept, setSelectedDept] = useState(null);
   const [activeRevenueIndex, setActiveRevenueIndex] = useState(null);
   const [selectedRevenue, setSelectedRevenue] = useState(null);
+  const [kpiData, setKpiData] = useState(null);
+  const [expenseDistribution, setExpenseDistribution] = useState(expenseByCategory);
+  const [monthlyTrend, setMonthlyTrend] = useState(topLineData);
+  const [employeeDist, setEmployeeDist] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -338,6 +369,95 @@ export default function Dashboard() {
     
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  const [refreshing, setRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState(null);
+
+  useEffect(() => {
+    fetchDashboardData();
+    
+    // Auto-refresh every 30 seconds
+    const interval = setInterval(() => {
+      fetchDashboardData(true); // silent refresh
+    }, 30000);
+
+    // Refresh when page becomes visible (user switches back to tab)
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchDashboardData(true); // silent refresh when tab becomes visible
+      }
+    };
+
+    // Refresh when window gains focus
+    const handleFocus = () => {
+      fetchDashboardData(true); // silent refresh when window gains focus
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, []);
+
+  const fetchDashboardData = async (silent = false) => {
+    try {
+      if (!silent) {
+        setLoading(true);
+      } else {
+        setRefreshing(true);
+      }
+
+      const [kpisRes, expenseDistRes, trendRes, empDistRes] = await Promise.all([
+        api.getKPIs(),
+        api.getExpenseDistribution(),
+        api.getMonthlyExpenseTrend({ startMonth: 1, endMonth: 6, year: new Date().getFullYear() }),
+        api.getEmployeeDistribution()
+      ]);
+
+      if (kpisRes.success) {
+        const kpis = kpisRes.data;
+        setKpiData({
+          totalSalary: formatCurrency(kpis.totalSalaryPayout),
+          totalIncentives: formatCurrency(kpis.totalIncentives),
+          totalGifts: formatCurrency(kpis.totalGifts),
+          totalExpenses: formatCurrency(kpis.totalExpenses)
+        });
+      }
+
+      if (expenseDistRes.success) {
+        const formatted = expenseDistRes.data.map(item => ({
+          ...item,
+          amount: formatCurrency(item.amount)
+        }));
+        setExpenseDistribution(formatted);
+      }
+
+      if (trendRes.success) {
+        setMonthlyTrend(trendRes.data.map(item => ({
+          month: item.month,
+          totalExpenses: parseFloat(item.totalExpenses)
+        })));
+      }
+
+      if (empDistRes.success) {
+        setEmployeeDist(empDistRes.data);
+      }
+
+      setLastUpdated(new Date());
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      if (!silent) {
+        // Show error message only on manual refresh
+      }
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
 
   const handlePieClick = (data, index) => {
     setActiveIndex(index);
@@ -359,6 +479,32 @@ export default function Dashboard() {
     setSelectedRevenue(revenue);
   };
 
+  const handleExportDashboard = () => {
+    try {
+      const csvData = [
+        ['Metric', 'Value'],
+        ['Total Salary Payout', kpiData?.totalSalary || 'N/A'],
+        ['Total Incentives', kpiData?.totalIncentives || 'N/A'],
+        ['Total Gifts', kpiData?.totalGifts || 'N/A'],
+        ['Total Expenses', kpiData?.totalExpenses || 'N/A'],
+        [''],
+        ['Month', 'Total Expenses (L)'],
+        ...monthlyTrend.map(item => [item.month, (item.totalExpenses / 100000).toFixed(2)])
+      ];
+      
+      const csvContent = csvData.map(row => row.join(',')).join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `dashboard_export_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      alert('Error exporting dashboard data');
+    }
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-50 text-gray-900">
       <Navbar />
@@ -366,25 +512,65 @@ export default function Dashboard() {
         <div className="flex w-full flex-col gap-6 sm:gap-8 px-3 py-4 sm:px-6 lg:px-8 xl:px-12">
           <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-2xl font-semibold">Overview Dashboard</h1>
-              <p className="text-sm text-gray-500">Sales overview · Jan 1, 2023 – Jun 30, 2023</p>
+              <h1 className="text-2xl font-semibold">Employee Expense Management Dashboard</h1>
+              <p className="text-sm text-gray-500">
+                Expense overview · {new Date().toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
+                {lastUpdated && (
+                  <span className="ml-2 text-xs text-gray-400">
+                    (Last updated: {lastUpdated.toLocaleTimeString()})
+                  </span>
+                )}
+              </p>
             </div>
-            <div className="flex items-center gap-3">
-              <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                Last 6 months
+            <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+              <button
+                onClick={() => fetchDashboardData(false)}
+                disabled={refreshing || loading}
+                className="rounded-md border border-gray-300 bg-white px-3 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50 flex items-center gap-2 active:scale-95 transition-all"
+                title="Refresh data"
+              >
+                {refreshing ? (
+                  <>
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-400 border-t-transparent"></div>
+                    <span className="hidden sm:inline">Refreshing...</span>
+                  </>
+                ) : (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.25 18.75a5.25 5.25 0 0 1 10.5 0M2.25 18.75a5.25 5.25 0 0 0 10.5 0m-10.5 0v-.75a5.25 5.25 0 0 1 5.25-5.25h1.5a5.25 5.25 0 0 1 5.25 5.25v.75m-10.5 0h10.5" />
+                    </svg>
+                    <span className="hidden sm:inline">Refresh</span>
+                  </>
+                )}
               </button>
-              <button className="rounded-md border border-blue-600 px-4 py-2 text-sm text-blue-600 hover:bg-blue-50">
-                Export
+              {lastUpdated && (
+                <span className="text-xs text-gray-500 hidden sm:inline">
+                  Updated: {lastUpdated.toLocaleTimeString()}
+                </span>
+              )}
+              <button 
+                onClick={handleExportDashboard}
+                className="rounded-md border border-blue-600 px-3 py-2 text-xs sm:text-sm text-blue-600 hover:bg-blue-50 flex items-center gap-2 active:scale-95 transition-all"
+              >
+                📥 <span className="hidden sm:inline">Export CSV</span>
               </button>
             </div>
           </header>
 
           {/* KPI CARDS */}
           <section className="grid gap-4 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4">
-            {kpiCards.map((card) => {
-              const bgColor = `${card.color}15`; // 15% opacity for background
+            {loading ? (
+              <div className="col-span-4 text-center py-8">Loading...</div>
+            ) : kpiCards.map((card, idx) => {
+              const dynamicValue = kpiData ? [
+                kpiData.totalSalary,
+                kpiData.totalIncentives,
+                kpiData.totalGifts,
+                kpiData.totalExpenses
+              ][idx] : card.value;
+              const bgColor = `${card.color}15`;
               const iconColor = card.color;
-              const borderColor = `${card.color}40`; // 40% opacity for border
+              const borderColor = `${card.color}40`;
               
               return (
                 <article
@@ -413,23 +599,23 @@ export default function Dashboard() {
                   <h2 className="relative mt-6 text-sm font-semibold uppercase tracking-[0.3em] text-gray-500">
                     {card.title}
                   </h2>
-                  <p className="relative mt-2 text-3xl font-semibold">{card.value}</p>
+                  <p className="relative mt-2 text-3xl font-semibold">{dynamicValue}</p>
                   <p className="relative mt-2 text-sm font-medium text-gray-500">{card.helper}</p>
                 </article>
               );
             })}
           </section>
 
-          {/* REVENUE DISTRIBUTION - DONUT CHART */}
+          {/* EXPENSE DISTRIBUTION - DONUT CHART */}
           <section className="rounded-lg border border-gray-200 bg-white p-4 sm:p-6 lg:p-8">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between mb-6">
               <div>
-                <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] sm:tracking-[0.25em] text-gray-500">Revenue Distribution</p>
-                <p className="text-[0.65rem] sm:text-xs text-gray-500 mt-1">Category-wise revenue breakdown across all services</p>
+                <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] sm:tracking-[0.25em] text-gray-500">Expense Distribution</p>
+                <p className="text-[0.65rem] sm:text-xs text-gray-500 mt-1">Category-wise expense breakdown across all categories</p>
               </div>
               <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                 <span className="mt-2 sm:mt-0 rounded-full border border-blue-200 bg-blue-50 px-2.5 sm:px-3 py-1 text-[0.65rem] sm:text-xs font-semibold text-blue-700 whitespace-nowrap">
-                  Total: ₹{totalRevenue.toFixed(1)}K
+                  Total: ₹{(totalExpenses / 100000).toFixed(2)}L
                 </span>
                 {selectedRevenue && (
                   <span 
@@ -449,13 +635,13 @@ export default function Dashboard() {
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <defs>
-                        {revenueByCategory.map((item, index) => (
-                          <g key={`revenue-defs-${index}`}>
-                            <linearGradient id={`revenue-gradient-${index}`} x1="0" y1="0" x2="0" y2="1">
+                        {expenseDistribution.map((item, index) => (
+                          <g key={`expense-defs-${index}`}>
+                            <linearGradient id={`expense-gradient-${index}`} x1="0" y1="0" x2="0" y2="1">
                               <stop offset="0%" stopColor={item.color} stopOpacity={1} />
                               <stop offset="100%" stopColor={item.color} stopOpacity={0.7} />
                             </linearGradient>
-                            <filter id={`revenue-glow-${index}`}>
+                            <filter id={`expense-glow-${index}`}>
                               <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
                               <feMerge>
                                 <feMergeNode in="coloredBlur"/>
@@ -466,7 +652,7 @@ export default function Dashboard() {
                         ))}
                       </defs>
                       <Pie
-                        data={revenueByCategory}
+                        data={expenseDistribution}
                         cx="50%"
                         cy="50%"
                         labelLine={false}
@@ -487,14 +673,14 @@ export default function Dashboard() {
                           innerRadius: isMobile ? 45 : 75,
                         }}
                       >
-                        {revenueByCategory.map((entry, index) => (
+                        {expenseDistribution.map((entry, index) => (
                           <Cell 
-                            key={`revenue-cell-${index}`} 
-                            fill={`url(#revenue-gradient-${index})`}
+                            key={`expense-cell-${index}`} 
+                            fill={`url(#expense-gradient-${index})`}
                             stroke={entry.color}
                             strokeWidth={activeRevenueIndex === index ? 4 : 2}
                             style={{
-                              filter: activeRevenueIndex === index ? `url(#revenue-glow-${index})` : 'drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.15))',
+                              filter: activeRevenueIndex === index ? `url(#expense-glow-${index})` : 'drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.15))',
                               cursor: 'pointer',
                               transition: 'all 0.3s ease',
                             }}
@@ -504,7 +690,7 @@ export default function Dashboard() {
                       <Tooltip
                         content={({ active, payload }) => {
                           if (!active || !payload || !payload[0]) return null;
-                          const item = revenueByCategory.find(d => d.value === payload[0].value);
+                          const item = expenseDistribution.find(d => d.value === payload[0].value);
                           if (!item) return null;
                           
                           return (
@@ -519,7 +705,7 @@ export default function Dashboard() {
                                     <span className="font-semibold text-gray-900">{item.value}%</span>
                                   </div>
                                   <div className="flex justify-between items-center gap-4">
-                                    <span className="text-gray-600">Revenue:</span>
+                                    <span className="text-gray-600">Amount:</span>
                                     <span className="font-semibold text-gray-900">{item.amount}</span>
                                   </div>
                                   <div className="flex justify-between items-center gap-4">
@@ -553,10 +739,10 @@ export default function Dashboard() {
                       ) : (
                         <div className="space-y-1">
                           <div className="text-3xl sm:text-4xl font-bold text-gray-900">
-                            ₹{totalRevenue.toFixed(1)}K
+                            ₹{(totalExpenses / 100000).toFixed(2)}L
                           </div>
                           <div className="text-xs sm:text-sm font-semibold text-gray-600 uppercase tracking-wider">
-                            Total Revenue
+                            Total Expenses
                           </div>
                           <div className="text-[0.65rem] sm:text-xs text-gray-500">
                             Click segment for details
@@ -573,7 +759,7 @@ export default function Dashboard() {
                   {/* Callout Boxes - Scrollable Container */}
                   <div className="relative z-10 w-full lg:max-h-[calc(100vh-200px)] lg:overflow-y-auto lg:overflow-x-visible lg:pr-4 lg:pl-2 custom-scrollbar">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 lg:pb-6 lg:pt-2 min-w-0">
-                      {revenueByCategory.map((item, index) => (
+                      {expenseDistribution.map((item, index) => (
                       <div
                         key={item.name}
                         onClick={() => handleRevenueBoxClick(item, index)}
@@ -659,12 +845,12 @@ export default function Dashboard() {
             <article className="rounded-lg border border-gray-200 bg-white p-6">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.25em] text-gray-500">Monthly Sales Trend</p>
-                  <h2 className="mt-2 text-3xl font-semibold">₹895.39K</h2>
-                  <p className="text-xs text-gray-500">last 30 days · +12.5% vs previous period</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.25em] text-gray-500">Monthly Expense Trend</p>
+                  <h2 className="mt-2 text-3xl font-semibold">₹8.95L</h2>
+                  <p className="text-xs text-gray-500">last 30 days · +5.2% vs previous period</p>
                 </div>
                 <div className="mt-3 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
-                  Jan 1, 2023 – Jun 30, 2023
+                  Jan 1, 2025 – Jun 30, 2025
                 </div>
               </div>
 
@@ -672,7 +858,7 @@ export default function Dashboard() {
               <div className="mt-6 h-48 sm:h-56 md:h-64 lg:h-72">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart 
-                    data={topLineData} 
+                    data={monthlyTrend}
                     margin={{ 
                       top: 20, 
                       right: 20, 
@@ -722,14 +908,14 @@ export default function Dashboard() {
                       cursor={{ fill: "rgba(99, 102, 241, 0.1)" }}
                       labelFormatter={(label) => `Month: ${label}`}
                       formatter={(value, name) => {
-                        const formattedValue = `₹${value}K`;
-                        const percentage = ((value / 565) * 100).toFixed(1);
+                        const formattedValue = `₹${value}L`;
+                        const percentage = ((value / 9.1) * 100).toFixed(1);
                         return [
                           <div key="tooltip" className="space-y-1">
                             <div className="font-semibold text-indigo-600">{formattedValue}</div>
                             <div className="text-xs text-gray-500">{percentage}% of peak</div>
                           </div>,
-                          "Revenue"
+                          "Expenses"
                         ];
                       }}
                       contentStyle={{
@@ -753,8 +939,8 @@ export default function Dashboard() {
                       }} 
                     />
                     <Bar 
-                      dataKey="totalSales" 
-                      name="Revenue" 
+                      dataKey="totalExpenses" 
+                      name="Expenses" 
                       fill="url(#barGradient)" 
                       radius={[8, 8, 0, 0]}
                       animationDuration={1500}
@@ -1243,7 +1429,7 @@ export default function Dashboard() {
                   {/* Callout Boxes - Scrollable Container */}
                   <div className="relative z-10 w-full lg:max-h-[calc(100vh-200px)] lg:overflow-y-auto lg:overflow-x-visible lg:pr-4 lg:pl-2 custom-scrollbar">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 lg:pb-6 lg:pt-2 min-w-0">
-                      {departmentDistribution.map((dept, index) => (
+                        {(employeeDist.length > 0 ? employeeDist : departmentDistribution).map((dept, index) => (
                       <div
                         key={dept.name}
                         onClick={() => handleDeptClick(dept, index)}

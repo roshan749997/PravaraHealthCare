@@ -1,13 +1,58 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Navbar from '../components/Navbar.jsx'
 import Footer from '../components/Footer.jsx'
 import { NavLink } from 'react-router-dom'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, Legend } from 'recharts'
+import { api, formatCurrency } from '../utils/api.js'
 
 // Employee Distribution colors
 const employeeColors = ["#F59E0B", "#DC2626", "#84CC16", "#06B6D4", "#6B7280"];
 
-const payrollData = [
+export default function Payroll() {
+  const [payrollData, setPayrollData] = useState([]);
+  const [summary, setSummary] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('')
+  const [sortBy, setSortBy] = useState('name')
+  const [sortOrder, setSortOrder] = useState('asc')
+  const [filterDept, setFilterDept] = useState('All')
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const [employeesRes, summaryRes] = await Promise.all([
+        api.getEmployees({ status: 'Active' }),
+        api.getPayrollSummary()
+      ]);
+      
+      if (employeesRes.success) {
+        const employees = employeesRes.data.employees.map(emp => ({
+          id: emp.employeeId,
+          name: emp.name,
+          monthlySalary: formatCurrency(emp.salary.monthly),
+          annualPackage: formatCurrency(emp.salary.annual),
+          department: emp.department,
+          status: emp.status,
+          joinDate: emp.joinDate ? new Date(emp.joinDate).toISOString().split('T')[0] : '',
+          _id: emp._id
+        }));
+        setPayrollData(employees);
+      }
+      
+      if (summaryRes.success) {
+        setSummary(summaryRes.data);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const mockPayrollData = [
   {
     id: 'EMP-001',
     name: 'Dr. Kavita Kulkarni',
@@ -101,13 +146,11 @@ const payrollData = [
 ]
 
 const parseAmount = (value) => Number(value.replace(/[^0-9.]/g, ''))
-const formatCurrency = (value) =>
-  new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value)
 
-const totalMonthly = payrollData.reduce((sum, employee) => sum + parseAmount(employee.monthlySalary), 0)
-const totalAnnual = payrollData.reduce((sum, employee) => sum + parseAmount(employee.annualPackage), 0)
-const averageMonthly = Math.round(totalMonthly / payrollData.length)
-const highestMonthly = payrollData.reduce(
+  const totalMonthly = summary?.monthlyPayroll || payrollData.reduce((sum, employee) => sum + parseAmount(employee.monthlySalary), 0)
+  const totalAnnual = summary?.annualPayroll || payrollData.reduce((sum, employee) => sum + parseAmount(employee.annualPackage), 0)
+  const averageMonthly = summary?.averageMonthlyPay || (payrollData.length > 0 ? Math.round(totalMonthly / payrollData.length) : 0)
+  const highestMonthly = summary?.highestMonthlyPay || payrollData.reduce(
   (max, employee) => Math.max(max, parseAmount(employee.monthlySalary)),
   0,
 )
@@ -130,17 +173,23 @@ const departmentChartData = Object.values(departmentStats).map((dept, idx) => ({
 }));
 
 const salaryRangeData = [
-  { range: '₹50K-₹70K', count: 4, color: employeeColors[0] },
-  { range: '₹70K-₹1L', count: 3, color: employeeColors[1] },
-  { range: '₹1L-₹2L', count: 2, color: employeeColors[2] },
-  { range: '₹2L+', count: 1, color: employeeColors[3] },
-];
-
-export default function Payroll() {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [sortBy, setSortBy] = useState('name')
-  const [sortOrder, setSortOrder] = useState('asc')
-  const [filterDept, setFilterDept] = useState('All')
+    { range: '₹50K-₹70K', count: payrollData.filter(e => {
+      const sal = parseAmount(e.monthlySalary);
+      return sal >= 50000 && sal < 70000;
+    }).length, color: employeeColors[0] },
+    { range: '₹70K-₹1L', count: payrollData.filter(e => {
+      const sal = parseAmount(e.monthlySalary);
+      return sal >= 70000 && sal < 100000;
+    }).length, color: employeeColors[1] },
+    { range: '₹1L-₹2L', count: payrollData.filter(e => {
+      const sal = parseAmount(e.monthlySalary);
+      return sal >= 100000 && sal < 200000;
+    }).length, color: employeeColors[2] },
+    { range: '₹2L+', count: payrollData.filter(e => {
+      const sal = parseAmount(e.monthlySalary);
+      return sal >= 200000;
+    }).length, color: employeeColors[3] },
+  ];
 
   const departments = ['All', ...new Set(payrollData.map(emp => emp.department))]
 
@@ -185,6 +234,26 @@ export default function Payroll() {
       setSortOrder('asc')
     }
   }
+
+  const handleExportPayroll = () => {
+    try {
+      const csvHeader = 'Employee ID,Name,Department,Monthly Salary,Annual Package,Status\n';
+      const csvRows = filteredAndSorted.map(emp => {
+        return `${emp.id},"${emp.name}",${emp.department},${emp.monthlySalary},${emp.annualPackage},${emp.status}`;
+      }).join('\n');
+      
+      const blob = new Blob([csvHeader + csvRows], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `payroll_export_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      alert('Error exporting payroll data');
+    }
+  }
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-50 text-gray-900">
       <Navbar />
@@ -200,7 +269,7 @@ export default function Payroll() {
                 Employee compensation summary
               </h1>
               <p className="mt-3 max-w-2xl text-xs text-gray-600 sm:mt-4 sm:text-sm">
-                Review monthly salary commitments, annual packages, and growth trends across Pravara Health Care. Use the insights below to plan payouts, manage incentives, and align budgets.
+                Review monthly salary commitments, annual packages, incentives, gifts, and allowances. Track all employee compensation components including salary, incentives, gifts, petrol/diesel, and mobile recharge expenses.
               </p>
               <div className="mt-5 flex flex-wrap gap-2.5 sm:mt-6 sm:gap-3">
                 <NavLink
@@ -221,10 +290,21 @@ export default function Payroll() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m6-6H6" />
                   </svg>
                 </NavLink>
+                <button
+                  onClick={handleExportPayroll}
+                  className="inline-flex items-center gap-2 rounded-md border border-green-600 px-3 py-2 text-xs font-semibold text-green-600 hover:bg-green-50 sm:px-4 sm:text-sm"
+                >
+                  📥 Export CSV
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                  </svg>
+                </button>
               </div>
             </div>
             <div className="grid gap-3 rounded-2xl border border-gray-200 bg-white p-4 sm:gap-4 sm:p-5">
-              {[{ label: 'Monthly payroll', value: formatCurrency(totalMonthly), detail: '+4.2% vs last cycle' }, { label: 'Annualised payroll', value: formatCurrency(totalAnnual), detail: 'Including bonuses & perks' }, { label: 'Highest monthly pay', value: formatCurrency(highestMonthly), detail: '₹1.8L at Oncology' }].map((stat) => (
+              {loading ? (
+                <div className="col-span-3 text-center py-4">Loading...</div>
+              ) : [{ label: 'Monthly payroll', value: formatCurrency(totalMonthly), detail: `${payrollData.length} employees` }, { label: 'Annualised payroll', value: formatCurrency(totalAnnual), detail: 'Including bonuses & perks' }, { label: 'Highest monthly pay', value: formatCurrency(highestMonthly), detail: 'Top employee salary' }].map((stat) => (
                 <div key={stat.label} className="rounded-xl border border-gray-200 bg-gray-50 p-3 sm:p-4">
                   <p className="text-[0.6rem] font-medium uppercase tracking-[0.3em] text-gray-500 sm:text-xs">{stat.label}</p>
                   <p className="mt-2 text-xl font-semibold sm:text-2xl">{stat.value}</p>

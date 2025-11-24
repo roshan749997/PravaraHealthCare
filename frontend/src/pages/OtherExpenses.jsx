@@ -1,11 +1,62 @@
+import { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar.jsx'
 import Footer from '../components/Footer.jsx'
 import { NavLink } from 'react-router-dom'
+import { api, formatCurrency } from '../utils/api.js'
 
 // Employee Distribution colors
 const employeeColors = ["#F59E0B", "#DC2626", "#84CC16", "#06B6D4", "#6B7280"];
 
-const expenseData = [
+export default function OtherExpenses() {
+  const [expenseData, setExpenseData] = useState([]);
+  const [filteredExpenses, setFilteredExpenses] = useState([]);
+  const [summary, setSummary] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterYear, setFilterYear] = useState(new Date().getFullYear());
+  const [sortBy, setSortBy] = useState('month');
+  const [sortOrder, setSortOrder] = useState('desc');
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    filterAndSortExpenses();
+  }, [expenseData, searchTerm, filterYear, sortBy, sortOrder]);
+
+  const fetchData = async () => {
+    try {
+      const [expensesRes, summaryRes] = await Promise.all([
+        api.getExpenses(),
+        api.getExpenseSummary()
+      ]);
+      
+      if (expensesRes.success) {
+        const expenses = expensesRes.data.map(exp => ({
+          month: `${['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][exp.month - 1]} ${exp.year}`,
+          officeRent: formatCurrency(exp.officeRent),
+          utilities: formatCurrency(exp.lightBill),
+          other: formatCurrency(exp.other),
+          notes: exp.notes || '',
+          _month: exp.month,
+          _year: exp.year,
+          _id: exp._id
+        }));
+        setExpenseData(expenses);
+      }
+      
+      if (summaryRes.success) {
+        setSummary(summaryRes.data);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const mockExpenseData = [
   {
     month: 'January 2025',
     officeRent: '₹2,20,000',
@@ -50,16 +101,68 @@ const expenseData = [
   },
 ]
 
-const parseAmount = (value) => Number(value.replace(/[^0-9.]/g, ''))
-const totalOfficeRent = expenseData.reduce((sum, item) => sum + parseAmount(item.officeRent), 0)
-const totalUtilities = expenseData.reduce((sum, item) => sum + parseAmount(item.utilities), 0)
-const totalOther = expenseData.reduce((sum, item) => sum + parseAmount(item.other), 0)
+  const filterAndSortExpenses = () => {
+    let filtered = expenseData.filter(exp => {
+      const matchesSearch = exp.month.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          exp.notes.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesYear = exp.month.includes(filterYear.toString());
+      return matchesSearch && matchesYear;
+    });
+
+    filtered.sort((a, b) => {
+      let aVal, bVal;
+      if (sortBy === 'month') {
+        aVal = new Date(a.month);
+        bVal = new Date(b.month);
+      } else if (sortBy === 'total') {
+        aVal = parseAmount(a.officeRent) + parseAmount(a.utilities) + parseAmount(a.other);
+        bVal = parseAmount(b.officeRent) + parseAmount(b.utilities) + parseAmount(b.other);
+      } else {
+        aVal = parseAmount(a[sortBy]);
+        bVal = parseAmount(b[sortBy]);
+      }
+      return sortOrder === 'asc' ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
+    });
+
+    setFilteredExpenses(filtered);
+  };
+
+  const handleSort = (field) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(field);
+      setSortOrder('desc');
+    }
+  };
+
+  const handleExportExpenses = () => {
+    try {
+      const csvHeader = 'Month,Office Rent,Light Bill,Other Expenses,Total,Notes\n';
+      const csvRows = filteredExpenses.map(exp => {
+        const total = parseAmount(exp.officeRent) + parseAmount(exp.utilities) + parseAmount(exp.other);
+        return `${exp.month},${exp.officeRent},${exp.utilities},${exp.other},${formatCurrency(total)},"${exp.notes || ''}"`;
+      }).join('\n');
+      
+      const blob = new Blob([csvHeader + csvRows], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `expenses_export_${filterYear}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      alert('Error exporting expenses data');
+    }
+  };
+
+  const parseAmount = (value) => Number(value.replace(/[^0-9.]/g, ''))
+  const totalOfficeRent = summary?.totalRent || filteredExpenses.reduce((sum, item) => sum + parseAmount(item.officeRent), 0)
+  const totalUtilities = summary?.totalLightBill || filteredExpenses.reduce((sum, item) => sum + parseAmount(item.utilities), 0)
+  const totalOther = summary?.totalOther || filteredExpenses.reduce((sum, item) => sum + parseAmount(item.other), 0)
 const totalExpenses = totalOfficeRent + totalUtilities + totalOther
+  const avgMonthly = summary?.avgMonthly || (filteredExpenses.length > 0 ? Math.round(totalExpenses / filteredExpenses.length) : 0)
 
-const formatCurrency = (value) =>
-  new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value)
-
-export default function OtherExpenses() {
   return (
     <div className="flex min-h-screen flex-col bg-gray-50 text-gray-900">
       <Navbar />
@@ -72,11 +175,10 @@ export default function OtherExpenses() {
                 Monthly expenses
               </span>
               <h1 className="mt-4 text-2xl font-semibold sm:text-3xl lg:text-4xl">
-                Other operational expenditure overview
+                Office Expenses Overview
               </h1>
               <p className="mt-3 max-w-2xl text-xs text-gray-600 sm:mt-4 sm:text-sm">
-                Track recurring office rent commitments, utility consumption, and discretionary spend across Pravara
-                Health Care facilities. Use this overview to anticipate upcoming payouts and optimize cost efficiency.
+                Track monthly office expenses: Office Rent, Light Bill (Electricity), and Other Expenses. Monitor all operational costs for better financial planning and budget management.
               </p>
               <div className="mt-5 flex flex-wrap gap-2.5 sm:mt-6 sm:gap-3">
                 <NavLink
@@ -97,10 +199,21 @@ export default function OtherExpenses() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25 21 12l-3.75 3.75M21 12H3" />
                   </svg>
                 </NavLink>
+                <button
+                  onClick={handleExportExpenses}
+                  className="inline-flex items-center gap-2 rounded-md border border-green-600 px-3 py-2 text-xs font-semibold text-green-600 hover:bg-green-50 sm:px-4 sm:text-sm"
+                >
+                  📥 Export CSV
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                  </svg>
+                </button>
               </div>
             </div>
             <div className="grid gap-3 rounded-2xl border border-gray-200 bg-white p-4 sm:gap-4 sm:p-5">
-              {[{ label: 'Total tracked months', value: `${expenseData.length}`, detail: 'Rolling financial view', color: employeeColors[0] }, { label: 'Current quarter spend', value: formatCurrency(totalExpenses), detail: 'Rent + utilities + misc', color: employeeColors[1] }, { label: 'Utilities variance', value: '+6.8%', detail: 'Compared to previous quarter', color: employeeColors[2] }].map((stat, idx) => {
+              {loading ? (
+                <div className="col-span-3 text-center py-4">Loading...</div>
+              ) : [{ label: 'Total tracked months', value: `${expenseData.length}`, detail: 'Rolling financial view', color: employeeColors[0] }, { label: 'Total expenses', value: formatCurrency(totalExpenses), detail: 'Rent + Light Bill + Other', color: employeeColors[1] }, { label: 'Average monthly', value: formatCurrency(avgMonthly), detail: 'Per month average', color: employeeColors[2] }].map((stat, idx) => {
                 const bgColor = `${stat.color}15`;
                 const borderColor = `${stat.color}40`;
                 
@@ -145,7 +258,7 @@ export default function OtherExpenses() {
               )
             }, 
             { 
-              label: 'Total utilities', 
+              label: 'Light Bill', 
               value: formatCurrency(totalUtilities),
               color: employeeColors[1],
               icon: (
@@ -214,20 +327,114 @@ export default function OtherExpenses() {
           })}
         </section>
 
+        {/* Search and Filter Section */}
+        <section className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex-1">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search by month or notes..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 pl-10 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                </svg>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="number"
+                placeholder="Year"
+                value={filterYear}
+                onChange={(e) => setFilterYear(parseInt(e.target.value))}
+                className="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 w-24"
+              />
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  setFilterYear(new Date().getFullYear());
+                }}
+                className="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-100"
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+        </section>
+
         <section className="overflow-hidden rounded-3xl border border-gray-200 bg-white">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 text-left">
               <thead className="bg-gray-50 text-[0.65rem] font-semibold uppercase tracking-[0.25em] text-gray-500 sm:text-xs">
                 <tr>
-                  <th scope="col" className="px-4 py-3 sm:px-6 sm:py-4">Month</th>
-                  <th scope="col" className="px-4 py-3 sm:px-6 sm:py-4">Office Rent</th>
-                  <th scope="col" className="px-4 py-3 sm:px-6 sm:py-4">Light & Utility</th>
-                  <th scope="col" className="px-4 py-3 sm:px-6 sm:py-4">Other Expenses</th>
+                  <th 
+                    scope="col" 
+                    className="px-4 py-3 sm:px-6 sm:py-4 cursor-pointer hover:bg-gray-200 transition-colors"
+                    onClick={() => handleSort('month')}
+                  >
+                    <div className="flex items-center gap-2">
+                      Month
+                      {sortBy === 'month' && (
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={`h-4 w-4 ${sortOrder === 'asc' ? '' : 'rotate-180'}`}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h5.25m5.25-.75L17.25 9m0 0L21 12.75M17.25 9v12.75" />
+                        </svg>
+                      )}
+                    </div>
+                  </th>
+                  <th 
+                    scope="col" 
+                    className="px-4 py-3 sm:px-6 sm:py-4 cursor-pointer hover:bg-gray-200 transition-colors"
+                    onClick={() => handleSort('officeRent')}
+                  >
+                    <div className="flex items-center gap-2">
+                      Office Rent
+                      {sortBy === 'officeRent' && (
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={`h-4 w-4 ${sortOrder === 'asc' ? '' : 'rotate-180'}`}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h5.25m5.25-.75L17.25 9m0 0L21 12.75M17.25 9v12.75" />
+                        </svg>
+                      )}
+                    </div>
+                  </th>
+                  <th 
+                    scope="col" 
+                    className="px-4 py-3 sm:px-6 sm:py-4 cursor-pointer hover:bg-gray-200 transition-colors"
+                    onClick={() => handleSort('utilities')}
+                  >
+                    <div className="flex items-center gap-2">
+                      Light Bill
+                      {sortBy === 'utilities' && (
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={`h-4 w-4 ${sortOrder === 'asc' ? '' : 'rotate-180'}`}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h5.25m5.25-.75L17.25 9m0 0L21 12.75M17.25 9v12.75" />
+                        </svg>
+                      )}
+                    </div>
+                  </th>
+                  <th 
+                    scope="col" 
+                    className="px-4 py-3 sm:px-6 sm:py-4 cursor-pointer hover:bg-gray-200 transition-colors"
+                    onClick={() => handleSort('other')}
+                  >
+                    <div className="flex items-center gap-2">
+                      Other Expenses
+                      {sortBy === 'other' && (
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={`h-4 w-4 ${sortOrder === 'asc' ? '' : 'rotate-180'}`}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h5.25m5.25-.75L17.25 9m0 0L21 12.75M17.25 9v12.75" />
+                        </svg>
+                      )}
+                    </div>
+                  </th>
                   <th scope="col" className="px-4 py-3 sm:px-6 sm:py-4">Notes</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 text-xs sm:text-sm">
-                {expenseData.map((month, idx) => {
+                {loading ? (
+                  <tr><td colSpan="5" className="px-4 py-8 text-center">Loading...</td></tr>
+                ) : filteredExpenses.length === 0 ? (
+                  <tr><td colSpan="5" className="px-4 py-8 text-center">No expenses found</td></tr>
+                ) : filteredExpenses.map((month, idx) => {
                   const colorIndex = idx % employeeColors.length;
                   const bgColor = `${employeeColors[colorIndex]}15`;
                   const borderColor = `${employeeColors[colorIndex]}40`;
