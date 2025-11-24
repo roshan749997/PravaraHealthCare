@@ -1,58 +1,13 @@
-import { useState, useMemo, useEffect } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import Navbar from '../components/Navbar.jsx'
 import Footer from '../components/Footer.jsx'
 import { NavLink } from 'react-router-dom'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, Legend } from 'recharts'
-import { api, formatCurrency } from '../utils/api.js'
 
 // Employee Distribution colors
 const employeeColors = ["#F59E0B", "#DC2626", "#84CC16", "#06B6D4", "#6B7280"];
 
-export default function Payroll() {
-  const [payrollData, setPayrollData] = useState([]);
-  const [summary, setSummary] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('')
-  const [sortBy, setSortBy] = useState('name')
-  const [sortOrder, setSortOrder] = useState('asc')
-  const [filterDept, setFilterDept] = useState('All')
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      const [employeesRes, summaryRes] = await Promise.all([
-        api.getEmployees({ status: 'Active' }),
-        api.getPayrollSummary()
-      ]);
-      
-      if (employeesRes.success) {
-        const employees = employeesRes.data.employees.map(emp => ({
-          id: emp.employeeId,
-          name: emp.name,
-          monthlySalary: formatCurrency(emp.salary.monthly),
-          annualPackage: formatCurrency(emp.salary.annual),
-          department: emp.department,
-          status: emp.status,
-          joinDate: emp.joinDate ? new Date(emp.joinDate).toISOString().split('T')[0] : '',
-          _id: emp._id
-        }));
-        setPayrollData(employees);
-      }
-      
-      if (summaryRes.success) {
-        setSummary(summaryRes.data);
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const mockPayrollData = [
+const payrollData = [
   {
     id: 'EMP-001',
     name: 'Dr. Kavita Kulkarni',
@@ -146,11 +101,13 @@ export default function Payroll() {
 ]
 
 const parseAmount = (value) => Number(value.replace(/[^0-9.]/g, ''))
+const formatCurrency = (value) =>
+  new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value)
 
-  const totalMonthly = summary?.monthlyPayroll || payrollData.reduce((sum, employee) => sum + parseAmount(employee.monthlySalary), 0)
-  const totalAnnual = summary?.annualPayroll || payrollData.reduce((sum, employee) => sum + parseAmount(employee.annualPackage), 0)
-  const averageMonthly = summary?.averageMonthlyPay || (payrollData.length > 0 ? Math.round(totalMonthly / payrollData.length) : 0)
-  const highestMonthly = summary?.highestMonthlyPay || payrollData.reduce(
+const totalMonthly = payrollData.reduce((sum, employee) => sum + parseAmount(employee.monthlySalary), 0)
+const totalAnnual = payrollData.reduce((sum, employee) => sum + parseAmount(employee.annualPackage), 0)
+const averageMonthly = Math.round(totalMonthly / payrollData.length)
+const highestMonthly = payrollData.reduce(
   (max, employee) => Math.max(max, parseAmount(employee.monthlySalary)),
   0,
 )
@@ -173,23 +130,29 @@ const departmentChartData = Object.values(departmentStats).map((dept, idx) => ({
 }));
 
 const salaryRangeData = [
-    { range: '₹50K-₹70K', count: payrollData.filter(e => {
-      const sal = parseAmount(e.monthlySalary);
-      return sal >= 50000 && sal < 70000;
-    }).length, color: employeeColors[0] },
-    { range: '₹70K-₹1L', count: payrollData.filter(e => {
-      const sal = parseAmount(e.monthlySalary);
-      return sal >= 70000 && sal < 100000;
-    }).length, color: employeeColors[1] },
-    { range: '₹1L-₹2L', count: payrollData.filter(e => {
-      const sal = parseAmount(e.monthlySalary);
-      return sal >= 100000 && sal < 200000;
-    }).length, color: employeeColors[2] },
-    { range: '₹2L+', count: payrollData.filter(e => {
-      const sal = parseAmount(e.monthlySalary);
-      return sal >= 200000;
-    }).length, color: employeeColors[3] },
-  ];
+  { range: '₹50K-₹70K', count: 4, color: employeeColors[0] },
+  { range: '₹70K-₹1L', count: 3, color: employeeColors[1] },
+  { range: '₹1L-₹2L', count: 2, color: employeeColors[2] },
+  { range: '₹2L+', count: 1, color: employeeColors[3] },
+];
+
+export default function Payroll() {
+  const [searchTerm, setSearchTerm] = useState('')
+  const [sortBy, setSortBy] = useState('name')
+  const [sortOrder, setSortOrder] = useState('asc')
+  const [filterDept, setFilterDept] = useState('All')
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   const departments = ['All', ...new Set(payrollData.map(emp => emp.department))]
 
@@ -234,47 +197,27 @@ const salaryRangeData = [
       setSortOrder('asc')
     }
   }
-
-  const handleExportPayroll = () => {
-    try {
-      const csvHeader = 'Employee ID,Name,Department,Monthly Salary,Annual Package,Status\n';
-      const csvRows = filteredAndSorted.map(emp => {
-        return `${emp.id},"${emp.name}",${emp.department},${emp.monthlySalary},${emp.annualPackage},${emp.status}`;
-      }).join('\n');
-      
-      const blob = new Blob([csvHeader + csvRows], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `payroll_export_${new Date().toISOString().split('T')[0]}.csv`;
-      a.click();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      alert('Error exporting payroll data');
-    }
-  }
-
   return (
     <div className="flex min-h-screen flex-col bg-gray-50 text-gray-900">
       <Navbar />
 
       <main className="mx-auto flex w-full max-w-7xl grow flex-col gap-8 px-4 py-8 sm:gap-10 sm:px-6 sm:py-10">
-        <section className="relative overflow-hidden rounded-3xl border border-gray-200 bg-white px-5 py-8 shadow-sm sm:px-8 sm:py-10">
+        <section className="relative overflow-hidden rounded-3xl border border-gray-200 px-5 py-8 shadow-sm sm:px-8 sm:py-10" style={{ backgroundColor: '#1e3a8a' }}>
           <div className="relative grid gap-6 lg:grid-cols-[1.2fr_1fr] lg:items-center">
             <div>
-              <span className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.3em] text-gray-700 sm:text-xs">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[0.6rem] font-semibold  tracking-[0.05em] text-white/90 sm:text-xs">
                 Payroll overview
               </span>
-              <h1 className="mt-4 text-2xl font-semibold sm:text-3xl lg:text-4xl">
+              <h1 className="mt-4 text-2xl font-semibold text-white sm:text-3xl lg:text-4xl">
                 Employee compensation summary
               </h1>
-              <p className="mt-3 max-w-2xl text-xs text-gray-600 sm:mt-4 sm:text-sm">
+              <p className="mt-3 max-w-2xl text-xs text-white/80 sm:mt-4 sm:text-sm">
                 Review monthly salary commitments, annual packages, incentives, gifts, and allowances. Track all employee compensation components including salary, incentives, gifts, petrol/diesel, and mobile recharge expenses.
               </p>
               <div className="mt-5 flex flex-wrap gap-2.5 sm:mt-6 sm:gap-3">
                 <NavLink
                   to="/total-salaries"
-                  className="inline-flex items-center gap-2 rounded-md border border-blue-600 px-3 py-2 text-xs font-semibold text-blue-600 hover:bg-blue-50 sm:px-4 sm:text-sm"
+                  className="inline-flex items-center gap-2 rounded-md border border-white/30 bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/20 sm:px-4 sm:text-sm transition-colors"
                 >
                   View total salaries
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4">
@@ -283,31 +226,33 @@ const salaryRangeData = [
                 </NavLink>
                 <NavLink
                   to="/employees"
-                  className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-100 sm:px-4 sm:text-sm"
+                  className="inline-flex items-center gap-2 rounded-md border border-white/30 bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/20 sm:px-4 sm:text-sm transition-colors"
                 >
                   Employee directory
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m6-6H6" />
                   </svg>
                 </NavLink>
-                <button
-                  onClick={handleExportPayroll}
-                  className="inline-flex items-center gap-2 rounded-md border border-green-600 px-3 py-2 text-xs font-semibold text-green-600 hover:bg-green-50 sm:px-4 sm:text-sm"
-                >
-                  📥 Export CSV
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                  </svg>
-                </button>
               </div>
             </div>
             <div className="grid gap-3 rounded-2xl border border-gray-200 bg-white p-4 sm:gap-4 sm:p-5">
-              {loading ? (
-                <div className="col-span-3 text-center py-4">Loading...</div>
-              ) : [{ label: 'Monthly payroll', value: formatCurrency(totalMonthly), detail: `${payrollData.length} employees` }, { label: 'Annualised payroll', value: formatCurrency(totalAnnual), detail: 'Including bonuses & perks' }, { label: 'Highest monthly pay', value: formatCurrency(highestMonthly), detail: 'Top employee salary' }].map((stat) => (
-                <div key={stat.label} className="rounded-xl border border-gray-200 bg-gray-50 p-3 sm:p-4">
-                  <p className="text-[0.6rem] font-medium uppercase tracking-[0.3em] text-gray-500 sm:text-xs">{stat.label}</p>
-                  <p className="mt-2 text-xl font-semibold sm:text-2xl">{stat.value}</p>
+              {[
+                { label: 'Monthly payroll', value: formatCurrency(totalMonthly), detail: '+4.2% vs last cycle', bgColor: '#FEF3C7', textColor: '#F59E0B' },
+                { label: 'Annualised payroll', value: formatCurrency(totalAnnual), detail: 'Including bonuses & perks', bgColor: '#FEE2E2', textColor: '#EF4444' },
+                { label: 'Highest monthly pay', value: formatCurrency(highestMonthly), detail: 'Top employee salary', bgColor: '#D1FAE5', textColor: '#10B981' }
+              ].map((stat) => (
+                <div 
+                  key={stat.label} 
+                  className="rounded-xl border border-gray-200 p-3 sm:p-4"
+                  style={{ backgroundColor: stat.bgColor }}
+                >
+                  <p className="text-[0.6rem] font-medium  tracking-[0.05em] text-gray-500 sm:text-xs">{stat.label}</p>
+                  <p 
+                    className="mt-2 text-xl font-semibold sm:text-2xl"
+                    style={{ color: stat.textColor }}
+                  >
+                    {stat.value}
+                  </p>
                   <p className="mt-1 text-[0.65rem] font-medium text-gray-600 sm:text-xs">{stat.detail}</p>
                 </div>
               ))}
@@ -319,8 +264,10 @@ const salaryRangeData = [
           {[
             { 
               label: 'Average monthly pay', 
-              value: formatCurrency(averageMonthly), 
-              color: employeeColors[0],
+              value: formatCurrency(averageMonthly),
+              helper: '+4.2% vs last month',
+              badge: 'On Track',
+              color: '#EC4899', // Pink
               icon: (
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
@@ -329,8 +276,10 @@ const salaryRangeData = [
             }, 
             { 
               label: 'Median salary band', 
-              value: '₹72K', 
-              color: employeeColors[1],
+              value: '₹72K',
+              helper: '+2.1% vs benchmark',
+              badge: 'Growing',
+              color: '#6366F1', // Indigo
               icon: (
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
@@ -339,8 +288,10 @@ const salaryRangeData = [
             }, 
             { 
               label: 'Variable payout fund', 
-              value: '₹2.4L', 
-              color: employeeColors[2],
+              value: '₹2.4L',
+              helper: '+8.5% vs target',
+              badge: 'Above target',
+              color: '#14B8A6', // Teal
               icon: (
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />
@@ -349,50 +300,79 @@ const salaryRangeData = [
             }, 
             { 
               label: 'Payroll completion', 
-              value: '92%', 
-              color: employeeColors[3],
+              value: '92%',
+              helper: '+2% vs last cycle',
+              badge: 'Controlled',
+              color: '#F97316', // Orange
               icon: (
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                 </svg>
               )
             }
-          ].map((item, idx) => {
-            const bgColor = `${item.color}15`;
-            const borderColor = `${item.color}40`;
-            
+          ].map((item) => {
             return (
-              <div 
-                key={item.label} 
-                className="rounded-lg bg-white p-4 sm:p-5 transition-all hover:shadow-lg"
-                style={{
-                  borderWidth: '1px',
-                  borderStyle: 'solid',
-                  borderColor: borderColor,
-                }}
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div 
-                    className="rounded-md p-2"
-                    style={{
-                      backgroundColor: bgColor,
-                      color: item.color,
-                    }}
-                  >
-                    {item.icon}
-                  </div>
-                </div>
-                <p className="text-[0.65rem] font-medium uppercase tracking-[0.25em] text-gray-500 sm:text-xs">{item.label}</p>
-                <p 
-                  className="mt-3 inline-flex items-center rounded-full px-3 py-1.5 text-xs font-semibold sm:text-sm"
+              <article
+                key={item.label}
+                className="relative rounded-lg p-3 sm:p-5 overflow-hidden shadow-lg cursor-pointer transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:brightness-110"
                   style={{
-                    backgroundColor: bgColor,
-                    color: item.color,
+                    backgroundColor: item.color,
+                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                    fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'",
+                  }}
+              >
+                {/* Large background icon */}
+                <div 
+                  className="absolute right-0 top-0 pointer-events-none"
+                  style={{
+                    transform: 'translate(15%, -15%)',
+                    opacity: 0.2,
                   }}
                 >
-                  {item.value}
-                </p>
-              </div>
+                  {React.cloneElement(item.icon, {
+                    className: 'h-20 w-20 sm:h-32 sm:w-32',
+                    style: { color: 'white', opacity: 0.2 }
+                  })}
+                </div>
+                
+                {/* Content */}
+                <div className="relative z-10 transition-transform duration-300">
+                  <div className="flex items-start justify-between mb-2 sm:mb-4">
+                    <span 
+                      className="rounded-full bg-white/20 px-2 py-0.5 sm:px-3 sm:py-1 text-[0.55rem] sm:text-[0.65rem] font-medium text-white transition-all duration-300 hover:bg-white/30"
+                      style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'" }}
+                    >
+                      {item.badge}
+                    </span>
+                  </div>
+                  <p 
+                    className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-1 transition-transform duration-300 hover:scale-105" 
+                    style={{ 
+                      letterSpacing: '-0.03em',
+                      fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'",
+                      fontWeight: 700
+                    }}
+                  >
+                    {item.value}
+                  </p>
+                  <h2 
+                    className="text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-2 transition-opacity duration-300"
+                    style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'" }}
+                  >
+                    {item.label}
+                  </h2>
+                  <p 
+                    className="text-xs sm:text-sm font-normal text-white/80 flex items-center gap-1 transition-transform duration-300" 
+                    style={{ 
+                      letterSpacing: '0',
+                      fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'"
+                    }}
+                  >
+                    <span className="transition-transform duration-300 hover:scale-125">{item.helper.includes('+') ? '↑' : '↓'}</span>
+                    {item.helper}
+                  </p>
+                </div>
+              </article>
             );
           })}
         </section>
@@ -401,7 +381,7 @@ const salaryRangeData = [
         <section className="grid gap-4 lg:grid-cols-2">
           {/* Department Salary Distribution */}
           <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
-            <h3 className="text-sm font-semibold uppercase tracking-[0.25em] text-gray-500 mb-4">Department Salary Distribution</h3>
+            <h3 className="text-sm font-semibold  tracking-[0.05em] text-gray-500 mb-4">Department Salary Distribution</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={departmentChartData}>
@@ -424,8 +404,8 @@ const salaryRangeData = [
 
           {/* Salary Range Distribution */}
           <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
-            <h3 className="text-sm font-semibold uppercase tracking-[0.25em] text-gray-500 mb-4">Salary Range Distribution</h3>
-            <div className="h-64">
+            <h3 className="text-xs sm:text-sm font-semibold  tracking-[0.05em] text-gray-500 mb-3 sm:mb-4">Salary Range Distribution</h3>
+            <div className="h-64 sm:h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -433,17 +413,44 @@ const salaryRangeData = [
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ range, count }) => `${range}: ${count}`}
-                    outerRadius={100}
+                    label={({ range, count, cx, cy, midAngle, innerRadius, outerRadius }) => {
+                      const RADIAN = Math.PI / 180;
+                      const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+                      const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                      const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                      return (
+                        <text 
+                          x={x} 
+                          y={y} 
+                          fill="white" 
+                          textAnchor={x > cx ? 'start' : 'end'} 
+                          dominantBaseline="central"
+                          fontSize={isMobile ? 10 : 12}
+                          fontWeight="bold"
+                          style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.6)' }}
+                        >
+                          {`${range}: ${count}`}
+                        </text>
+                      );
+                    }}
+                    outerRadius={isMobile ? 80 : 120}
+                    innerRadius={isMobile ? 0 : 0}
                     fill="#8884d8"
                     dataKey="count"
+                    paddingAngle={3}
                   >
                     {salaryRangeData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip />
-                  <Legend />
+                  <Tooltip 
+                    formatter={(value) => `${value} employees`}
+                    contentStyle={{ borderRadius: '8px', border: '1px solid #E5E7EB', fontSize: isMobile ? '12px' : '14px' }}
+                  />
+                  <Legend 
+                    wrapperStyle={{ fontSize: isMobile ? '11px' : '12px', paddingTop: '10px' }}
+                    iconType="circle"
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -484,7 +491,7 @@ const salaryRangeData = [
         <section className="overflow-hidden rounded-3xl border border-gray-200 bg-white">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 text-left">
-              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 text-[0.65rem] font-semibold uppercase tracking-[0.25em] text-gray-500 sm:text-xs">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 text-[0.65rem] font-semibold  tracking-[0.05em] text-gray-500 sm:text-xs">
                 <tr>
                   <th 
                     scope="col" 
@@ -555,7 +562,7 @@ const salaryRangeData = [
                           </span>
                           <div>
                             <p className="text-sm font-semibold sm:text-base">{employee.name}</p>
-                            <p className="text-[0.6rem] font-medium uppercase tracking-[0.25em] text-gray-500 sm:text-xs">Payroll cycle</p>
+                            <p className="text-[0.6rem] font-medium  tracking-[0.05em] text-gray-500 sm:text-xs">Payroll cycle</p>
                           </div>
                         </div>
                       </td>

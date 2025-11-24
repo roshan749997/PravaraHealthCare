@@ -1,525 +1,515 @@
-import { useState, useMemo, useEffect } from 'react';
-import Navbar from '../components/Navbar.jsx';
-import Footer from '../components/Footer.jsx';
-import { NavLink } from 'react-router-dom';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, Legend } from 'recharts';
-import { formatCurrency } from '../utils/api.js';
+import React, { useState, useEffect } from "react";
+import Navbar from "../components/Navbar.jsx";
+import Footer from "../components/Footer.jsx";
+import { Cell, Funnel, FunnelChart, LabelList, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
-const API_BASE = 'http://localhost:5000/api';
-const employeeColors = ["#F59E0B", "#DC2626", "#84CC16", "#06B6D4", "#6B7280"];
+// KPI Cards for Hiring Dashboard - matching Dashboard.jsx style with different colors
+const kpiCards = [
+  {
+    title: "Hiring Rate",
+    value: "2.1%",
+    helper: "+0.6pp vs last month",
+    badge: "Healthy",
+    color: "#EC4899", // Pink
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.375 21c-2.331 0-4.512-.645-6.375-1.765Z" />
+      </svg>
+    ),
+  },
+  {
+    title: "Days to Hire",
+    value: "5 Days",
+    helper: "-2 days vs last month",
+    badge: "Improving",
+    color: "#6366F1", // Indigo
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+      </svg>
+    ),
+  },
+  {
+    title: "Cost Per Hire",
+    value: "₹1,400",
+    helper: "+₹120 vs budget",
+    badge: "On Track",
+    color: "#14B8A6", // Teal
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+      </svg>
+    ),
+  },
+  {
+    title: "Open Positions",
+    value: "5",
+    helper: "2 critical roles",
+    badge: "Active",
+    color: "#F97316", // Orange
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 .414-.336.75-.75.75h-4.5a.75.75 0 0 1-.75-.75v-4.25m0 0h4.5m-4.5 0-3 3m3-3 3-3m-3 3h4.5m0 0v4.25a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1-.75-.75v-4.25" />
+      </svg>
+    ),
+  },
+];
 
-export default function EmployeeList() {
-  const [employees, setEmployees] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('name');
-  const [sortOrder, setSortOrder] = useState('asc');
-  const [filterDept, setFilterDept] = useState('All');
-  const [filterStatus, setFilterStatus] = useState('All');
+const overviewStats = [
+  {
+    label: "Hired",
+    value: "2",
+    subtitle: "Offers accepted this month",
+    change: "+1 vs July",
+    changeTone: "text-[#A020F0]",
+    gradient: "from-[#A020F0]/20 via-[#D400FF]/20 to-[#FF00CC]/20",
+    progress: 45,
+    progressColor: "bg-[#A020F0]",
+    progressLabel: "45% of quarterly target",
+  },
+  {
+    label: "Apps Per Hire",
+    value: "2.1",
+    subtitle: "Quality of applicant pipeline",
+    change: "-0.4 vs benchmark",
+    changeTone: "text-[#D400FF]",
+    gradient: "from-[#D400FF]/20 via-[#FF00CC]/20 to-[#A020F0]/20",
+    progress: 65,
+    progressColor: "bg-[#D400FF]",
+    progressLabel: "Pipeline health 65%",
+  },
+  {
+    label: "Days to Hire",
+    value: "5",
+    subtitle: "Average time from application",
+    change: "-2 days vs last month",
+    changeTone: "text-[#A020F0]",
+    gradient: "from-[#A020F0]/20 via-[#D400FF]/20 to-[#FF00CC]/20",
+    progress: 72,
+    progressColor: "bg-[#A020F0]",
+    progressLabel: "Service-level 72%",
+  },
+  {
+    label: "Cost Per Hire",
+    value: "₹1400",
+    subtitle: "Recruiting spend per hire",
+    change: "+₹120 vs budget",
+    changeTone: "text-[#FF00CC]",
+    gradient: "from-[#FF00CC]/20 via-[#A020F0]/20 to-[#D400FF]/20",
+    progress: 58,
+    progressColor: "bg-[#FF00CC]",
+    progressLabel: "Budget used 58%",
+  },
+  {
+    label: "Open Positions",
+    value: "5",
+    subtitle: "Roles awaiting final interviews",
+    change: "2 critical",
+    changeTone: "text-[#D400FF]",
+    gradient: "from-[#D400FF]/20 via-[#A020F0]/20 to-[#FF00CC]/20",
+    progress: 33,
+    progressColor: "bg-[#D400FF]",
+    progressLabel: "Critical roles 33%",
+  },
+  {
+    label: "Days in Market",
+    value: "6",
+    subtitle: "Average posting visibility",
+    change: "+1 day vs goal",
+    changeTone: "text-[#FF00CC]",
+    gradient: "from-[#FF00CC]/20 via-[#D400FF]/20 to-[#A020F0]/20",
+    progress: 52,
+    progressColor: "bg-[#FF00CC]",
+    progressLabel: "Exposure 52%",
+  },
+];
+
+const monthlyMetrics = [
+  { month: "May 2021", hired: "0", daysToHire: "-", status: "Planning", statusTone: "bg-[#A020F0]/20 text-[#A020F0]" },
+  { month: "June 2021", hired: "0", daysToHire: "-", status: "Sourcing", statusTone: "bg-[#D400FF]/20 text-[#D400FF]" },
+  { month: "July 2021", hired: "1", daysToHire: "6", status: "Filled", statusTone: "bg-[#A020F0]/20 text-[#A020F0]" },
+  { month: "August 2021", hired: "x", daysToHire: "x", status: "In progress", statusTone: "bg-[#FF00CC]/20 text-[#FF00CC]" },
+];
+
+const funnelData = [
+  { name: "Application", value: 100 },
+  { name: "Phone Screen", value: 85 },
+  { name: "MGR Interview", value: 75 },
+  { name: "Onsite Interview", value: 65 },
+  { name: "Offer", value: 55 },
+  { name: "Hire", value: 45 },
+];
+
+const funnelColors = ["#F59E0B", "#DC2626", "#84CC16", "#06B6D4", "#6B7280"];
+
+const funnelInsights = [
+  { stage: "Application → Phone Screen", drop: "15% drop", note: "Automated acknowledgement reduced wait time" },
+  { stage: "Phone Screen → MGR Interview", drop: "10% drop", note: "Hiring manager capacity improving week-on-week" },
+  { stage: "Onsite → Offer", drop: "10% drop", note: "Offer alignment workshop scheduled for next sprint" },
+];
+
+const pipelineData = [
+  { name: "Application", value: 17, description: "Resume review within 24 hrs" },
+  { name: "Phone Screen", value: 17, description: "Initial HR screening" },
+  { name: "MGR Interview", value: 17, description: "Panel of hiring leads" },
+  { name: "Onsite Interview", value: 17, description: "Clinical simulation" },
+  { name: "Offer", value: 17, description: "Compensation negotiation" },
+  { name: "Hire", value: 17, description: "Background & onboarding" },
+];
+
+const pipelineColors = ["#F59E0B", "#DC2626", "#84CC16", "#06B6D4", "#6B7280"];
+
+const highlightCards = [
+  {
+    title: "Sourcing Channel",
+    value: "Employee referrals",
+    description: "Accounts for 55% of qualified applications with the lowest churn.",
+    color: "bg-[#A020F0]",
+  },
+  {
+    title: "Urgent Role",
+    value: "ICU Nurse (Night Shift)",
+    description: "3 offers outstanding, final interviews scheduled this week.",
+    color: "bg-[#FF00CC]",
+  },
+  {
+    title: "Diversity Goal",
+    value: "58% female hires",
+    description: "On track to meet quarterly objective with current pipeline mix.",
+    color: "bg-[#D400FF]",
+  },
+  {
+    title: "Retention Rate",
+    value: "92%",
+    description: "High employee satisfaction and retention across all departments.",
+    color: "bg-[#10B981]",
+  },
+];
+
+export default function Dashboard() {
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    fetchEmployees();
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
-
-  const [error, setError] = useState(null);
-
-  const fetchEmployees = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      // Try using direct fetch as fallback
-      const response = await fetch(`${API_BASE}/employees`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      if (data && data.success) {
-        const employeesData = data.data?.employees || data.data || [];
-        if (Array.isArray(employeesData) && employeesData.length > 0) {
-          setEmployees(employeesData.map(emp => ({
-            id: emp.employeeId,
-            name: emp.name,
-            email: emp.email || '',
-            phone: emp.phone || '',
-            department: emp.department,
-            designation: emp.designation || '',
-            monthlySalary: formatCurrency(emp.salary?.monthly || 0),
-            annualPackage: formatCurrency(emp.salary?.annual || 0),
-            status: emp.status,
-            joinDate: emp.joinDate ? new Date(emp.joinDate).toISOString().split('T')[0] : '',
-            _id: emp._id
-          })));
-        } else {
-          setError('No employees found in database. Please add employees from Admin Panel → Manage Employees.');
-          setEmployees([]);
-        }
-      } else {
-        setError(data?.message || 'Failed to fetch employees');
-        setEmployees([]);
-      }
-    } catch (error) {
-      console.error('Error fetching employees:', error);
-      if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-        setError('Cannot connect to server. Please make sure the backend server is running on port 5000.');
-      } else {
-        setError(`Error: ${error.message}`);
-      }
-      setEmployees([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const parseAmount = (value) => Number(value.replace(/[^0-9.]/g, ''));
-
-  const filteredAndSorted = useMemo(() => {
-    let filtered = employees.filter(emp => {
-      const matchesSearch = emp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          emp.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          emp.email.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesDept = filterDept === 'All' || emp.department === filterDept;
-      const matchesStatus = filterStatus === 'All' || emp.status === filterStatus;
-      return matchesSearch && matchesDept && matchesStatus;
-    });
-
-    filtered.sort((a, b) => {
-      let aVal, bVal;
-      if (sortBy === 'name') {
-        aVal = a.name;
-        bVal = b.name;
-      } else if (sortBy === 'salary') {
-        aVal = parseAmount(a.monthlySalary);
-        bVal = parseAmount(b.monthlySalary);
-      } else if (sortBy === 'department') {
-        aVal = a.department;
-        bVal = b.department;
-      } else if (sortBy === 'joinDate') {
-        aVal = new Date(a.joinDate);
-        bVal = new Date(b.joinDate);
-      } else {
-        aVal = a[sortBy];
-        bVal = b[sortBy];
-      }
-
-      if (typeof aVal === 'string') {
-        return sortOrder === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-      }
-      return sortOrder === 'asc' ? aVal - bVal : bVal - aVal;
-    });
-
-    return filtered;
-  }, [employees, searchTerm, sortBy, sortOrder, filterDept, filterStatus]);
-
-  const handleSort = (field) => {
-    if (sortBy === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortBy(field);
-      setSortOrder('asc');
-    }
-  };
-
-  const handleExport = () => {
-    try {
-      const csvHeader = 'Employee ID,Name,Email,Phone,Department,Designation,Join Date,Monthly Salary,Annual Package,Status\n';
-      const csvRows = filteredAndSorted.map(emp => {
-        return `${emp.id},"${emp.name}","${emp.email}","${emp.phone}",${emp.department},"${emp.designation}",${emp.joinDate},${emp.monthlySalary},${emp.annualPackage},${emp.status}`;
-      }).join('\n');
-      
-      const blob = new Blob([csvHeader + csvRows], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `employees_export_${new Date().toISOString().split('T')[0]}.csv`;
-      a.click();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      alert('Error exporting employees data');
-    }
-  };
-
-  // Department distribution
-  const departmentStats = filteredAndSorted.reduce((acc, emp) => {
-    const dept = emp.department;
-    if (!acc[dept]) {
-      acc[dept] = { name: dept, count: 0, totalSalary: 0 };
-    }
-    acc[dept].count += 1;
-    acc[dept].totalSalary += parseAmount(emp.monthlySalary);
-    return acc;
-  }, {});
-
-  const departmentChartData = Object.values(departmentStats).map((dept, idx) => ({
-    ...dept,
-    avgSalary: Math.round(dept.totalSalary / dept.count),
-    color: employeeColors[idx % employeeColors.length],
-  }));
-
-  const departments = ['All', ...new Set(employees.map(emp => emp.department))];
-  const statuses = ['All', ...new Set(employees.map(emp => emp.status))];
-
-  const totalEmployees = filteredAndSorted.length;
-  const activeEmployees = filteredAndSorted.filter(e => e.status === 'Active').length;
-  const totalMonthlySalary = filteredAndSorted.reduce((sum, emp) => sum + parseAmount(emp.monthlySalary), 0);
-  const avgSalary = totalEmployees > 0 ? Math.round(totalMonthlySalary / totalEmployees) : 0;
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50 text-gray-900">
       <Navbar />
-      <main className="mx-auto flex w-full max-w-7xl grow flex-col gap-8 px-4 py-8 sm:gap-10 sm:px-6 sm:py-10">
-        <section className="relative overflow-hidden rounded-3xl border border-gray-200 bg-white px-5 py-8 shadow-sm sm:px-8 sm:py-10">
-          <div className="relative grid gap-6 lg:grid-cols-[1.2fr_1fr] lg:items-center">
-            <div>
-              <span className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.3em] text-gray-700 sm:text-xs">
-                Employee Directory
-              </span>
-              <h1 className="mt-4 text-2xl font-semibold sm:text-3xl lg:text-4xl">
-                Employee Management
-              </h1>
-              <p className="mt-3 max-w-2xl text-xs text-gray-600 sm:mt-4 sm:text-sm">
-                View and manage all employees. Search, filter, and export employee data. Track employee information, salaries, and department distribution.
-              </p>
-              <div className="mt-5 flex flex-wrap gap-2.5 sm:mt-6 sm:gap-3">
-                <NavLink
-                  to="/admin/employees"
-                  className="inline-flex items-center gap-2 rounded-md border border-blue-600 px-3 py-2 text-xs font-semibold text-blue-600 hover:bg-blue-50 sm:px-4 sm:text-sm"
-                >
-                  Manage Employees
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25 21 12l-3.75 3.75M21 12H3" />
-                  </svg>
-                </NavLink>
-                <button
-                  onClick={fetchEmployees}
-                  disabled={loading}
-                  className="inline-flex items-center gap-2 rounded-md border border-gray-300 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-100 disabled:opacity-50 sm:px-4 sm:text-sm"
-                >
-                  🔄 Refresh
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.25 18.75a5.25 5.25 0 0 1 10.5 0M2.25 18.75a5.25 5.25 0 0 0 10.5 0m-10.5 0v-.75a5.25 5.25 0 0 1 5.25-5.25h1.5a5.25 5.25 0 0 1 5.25 5.25v.75m-10.5 0h10.5" />
-                  </svg>
-                </button>
-                <button
-                  onClick={handleExport}
-                  disabled={filteredAndSorted.length === 0}
-                  className="inline-flex items-center gap-2 rounded-md border border-green-600 px-3 py-2 text-xs font-semibold text-green-600 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed sm:px-4 sm:text-sm"
-                >
-                  📥 Export CSV
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div className="grid gap-3 rounded-2xl border border-gray-200 bg-white p-4 sm:gap-4 sm:p-5">
-              {loading ? (
-                <div className="col-span-3 text-center py-4">
-                  <div className="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-                </div>
-              ) : error ? (
-                <div className="col-span-3 text-center py-4 text-red-600">
-                  <p className="text-sm">{error}</p>
-                  <button
-                    onClick={fetchEmployees}
-                    className="mt-2 rounded-md bg-red-600 px-3 py-1 text-xs text-white hover:bg-red-700"
-                  >
-                    Retry
-                  </button>
-                </div>
-              ) : [
-                { label: 'Total Employees', value: totalEmployees, detail: `${activeEmployees} active` },
-                { label: 'Total Monthly Salary', value: formatCurrency(totalMonthlySalary), detail: 'All employees combined' },
-                { label: 'Average Salary', value: formatCurrency(avgSalary), detail: 'Per employee average' }
-              ].map((stat, idx) => (
-                <div key={stat.label} className="rounded-xl border border-gray-200 bg-gray-50 p-3 sm:p-4">
-                  <p className="text-[0.6rem] font-medium uppercase tracking-[0.3em] text-gray-500 sm:text-xs">{stat.label}</p>
-                  <p className="mt-2 text-xl font-semibold sm:text-2xl">{stat.value}</p>
-                  <p className="mt-1 text-[0.65rem] font-medium text-gray-600 sm:text-xs">{stat.detail}</p>
-                </div>
-              ))}
-            </div>
+      <main className="mx-auto w-full max-w-screen-2xl grow overflow-hidden px-3 py-6 sm:px-4 sm:py-8 lg:px-6 xl:px-8">
+        <div className="flex flex-col gap-6 overflow-hidden rounded-lg border border-gray-200 bg-white p-4 sm:gap-8 sm:p-6 lg:p-8">
+        <header className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div>
+            <p className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 sm:px-3 sm:py-1 text-[0.65rem] sm:text-xs font-semibold  tracking-[0.05em] text-gray-500">
+              Overview
+            </p>
+            <h1 className="mt-3 sm:mt-4 text-xl sm:text-2xl lg:text-3xl font-semibold">
+              Monthly Hiring Dashboard with Recruitment Funnel
+            </h1>
           </div>
-        </section>
+          <p className="self-start rounded-full border border-blue-200 bg-blue-50 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold text-blue-700">
+            August 2021
+          </p>
+        </header>
 
-        {/* Stats Cards */}
-        <section className="grid gap-3 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 sm:gap-4">
-          {[
-            { label: 'Total Employees', value: totalEmployees, color: employeeColors[0] },
-            { label: 'Active Employees', value: activeEmployees, color: employeeColors[1] },
-            { label: 'Total Salary', value: formatCurrency(totalMonthlySalary), color: employeeColors[2] },
-            { label: 'Avg Salary', value: formatCurrency(avgSalary), color: employeeColors[3] }
-          ].map((item, idx) => {
-            const bgColor = `${item.color}15`;
-            const borderColor = `${item.color}40`;
-            
+        {/* KPI CARDS */}
+        <section className="grid gap-4 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4">
+          {kpiCards.map((card) => {
             return (
-              <div 
-                key={item.label} 
-                className="rounded-lg bg-white p-4 sm:p-5 transition-all hover:shadow-lg"
-                style={{
-                  borderWidth: '1px',
-                  borderStyle: 'solid',
-                  borderColor: borderColor,
-                }}
-              >
-                <p className="text-[0.65rem] font-medium uppercase tracking-[0.25em] text-gray-500 sm:text-xs">{item.label}</p>
-                <p 
-                  className="mt-3 inline-flex items-center rounded-full px-3 py-1.5 text-xs font-semibold sm:text-sm"
+              <article
+                key={card.title}
+                className="relative rounded-lg p-3 sm:p-5 overflow-hidden shadow-lg cursor-pointer transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:brightness-110"
                   style={{
-                    backgroundColor: bgColor,
-                    color: item.color,
+                    backgroundColor: card.color,
+                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                    fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'",
+                  }}
+              >
+                {/* Large background icon */}
+                <div 
+                  className="absolute right-0 top-0 pointer-events-none"
+                  style={{
+                    transform: 'translate(15%, -15%)',
+                    opacity: 0.2,
                   }}
                 >
-                  {item.value}
-                </p>
-              </div>
+                  {React.cloneElement(card.icon, {
+                    className: 'h-20 w-20 sm:h-32 sm:w-32',
+                    style: { color: 'white', opacity: 0.2 }
+                  })}
+                </div>
+                
+                {/* Content */}
+                <div className="relative z-10 transition-transform duration-300">
+                  <div className="flex items-start justify-between mb-2 sm:mb-4">
+                    <span 
+                      className="rounded-full bg-white/20 px-2 py-0.5 sm:px-3 sm:py-1 text-[0.55rem] sm:text-[0.65rem] font-medium text-white transition-all duration-300 hover:bg-white/30"
+                      style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'" }}
+                    >
+                      {card.badge}
+                    </span>
+                  </div>
+                  <p 
+                    className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-1 transition-transform duration-300 hover:scale-105" 
+                    style={{ 
+                      letterSpacing: '-0.03em',
+                      fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'",
+                      fontWeight: 700
+                    }}
+                  >
+                    {card.value}
+                  </p>
+                  <h2 
+                    className="text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-2 transition-opacity duration-300"
+                    style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'" }}
+                  >
+                    {card.title}
+                  </h2>
+                  <p 
+                    className="text-xs sm:text-sm font-normal text-white/80 flex items-center gap-1 transition-transform duration-300" 
+                    style={{ 
+                      letterSpacing: '0',
+                      fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'"
+                    }}
+                  >
+                    <span className="transition-transform duration-300 hover:scale-125">{card.helper.includes('+') || card.helper.includes('-') ? (card.helper.includes('+') ? '↑' : '↓') : ''}</span>
+                    {card.helper}
+                  </p>
+                </div>
+              </article>
             );
           })}
         </section>
 
-        {/* Department Chart */}
-        {departmentChartData.length > 0 && (
-          <section className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
-            <h3 className="text-sm font-semibold uppercase tracking-[0.25em] text-gray-500 mb-4">Department Distribution</h3>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={departmentChartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
-                  <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                  <YAxis tick={{ fontSize: 12 }} tickFormatter={(value) => `${value/1000}K`} />
-                  <Tooltip 
-                    formatter={(value) => formatCurrency(value)}
-                    contentStyle={{ borderRadius: '8px', border: '1px solid #E5E7EB' }}
-                  />
-                  <Bar dataKey="count" radius={[8, 8, 0, 0]}>
-                    {departmentChartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </section>
-        )}
-
-        {/* Search and Filter Section */}
-        <section className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex-1">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search by name, ID, or email..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 pl-10 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                />
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                </svg>
+        <section className="grid gap-3 sm:gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {overviewStats.map((stat) => (
+            <article
+              key={stat.label}
+              className={`group flex flex-col justify-between rounded-lg border border-emerald-100 bg-emerald-50 p-3 sm:p-4 transition shadow-sm hover:shadow-md`}
+              style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'" }}
+            >
+              <header className="flex items-center justify-between mb-2">
+                <p className="text-[0.65rem] sm:text-xs font-semibold tracking-[0.05em] text-gray-700" style={{ letterSpacing: '-0.02em' }}>{stat.label}</p>
+                <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-100 px-1.5 py-0.5 text-[0.55rem] sm:text-[0.6rem] font-semibold text-gray-800 transition" style={{ letterSpacing: '-0.02em' }}>
+                  {stat.change}
+                </span>
+              </header>
+              <div className="mb-3">
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1" style={{ letterSpacing: '-0.03em' }}>{stat.value}</p>
+                <p className="text-xs sm:text-sm text-gray-600" style={{ letterSpacing: '-0.01em' }}>{stat.subtitle}</p>
               </div>
-            </div>
-            <div className="flex gap-2">
-              <select
-                value={filterDept}
-                onChange={(e) => setFilterDept(e.target.value)}
-                className="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-              >
-                {departments.map(dept => (
-                  <option key={dept} value={dept}>{dept}</option>
-                ))}
-              </select>
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-              >
-                {statuses.map(status => (
-                  <option key={status} value={status}>{status}</option>
-                ))}
-              </select>
-              <button
-                onClick={() => {
-                  setSearchTerm('');
-                  setFilterDept('All');
-                  setFilterStatus('All');
-                }}
-                className="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-100"
-              >
-                Clear
-              </button>
-            </div>
-          </div>
+              <div className="mt-auto">
+                <div className="h-1.5 sm:h-2 w-full rounded-full bg-emerald-100 overflow-hidden">
+                  <div className="h-full rounded-full bg-emerald-500 transition-all duration-500" style={{ width: `${stat.progress}%` }} />
+                </div>
+                <p className={`mt-1.5 text-[0.65rem] sm:text-xs font-semibold text-emerald-700`} style={{ letterSpacing: '-0.01em' }}>{stat.progressLabel}</p>
+              </div>
+            </article>
+          ))}
         </section>
 
-        {/* Employee Table */}
-        <section className="overflow-hidden rounded-3xl border border-gray-200 bg-white">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 text-left">
-              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 text-[0.65rem] font-semibold uppercase tracking-[0.25em] text-gray-500 sm:text-xs">
-                <tr>
-                  <th 
-                    scope="col" 
-                    className="px-4 py-3 sm:px-6 sm:py-4 cursor-pointer hover:bg-gray-200 transition-colors"
-                    onClick={() => handleSort('name')}
-                  >
-                    <div className="flex items-center gap-2">
-                      Employee
-                      {sortBy === 'name' && (
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={`h-4 w-4 ${sortOrder === 'asc' ? '' : 'rotate-180'}`}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h5.25m5.25-.75L17.25 9m0 0L21 12.75M17.25 9v12.75" />
-                        </svg>
-                      )}
-                    </div>
-                  </th>
-                  <th scope="col" className="px-4 py-3 sm:px-6 sm:py-4">Contact</th>
-                  <th 
-                    scope="col" 
-                    className="px-4 py-3 sm:px-6 sm:py-4 cursor-pointer hover:bg-gray-200 transition-colors"
-                    onClick={() => handleSort('department')}
-                  >
-                    <div className="flex items-center gap-2">
-                      Department
-                      {sortBy === 'department' && (
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={`h-4 w-4 ${sortOrder === 'asc' ? '' : 'rotate-180'}`}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h5.25m5.25-.75L17.25 9m0 0L21 12.75M17.25 9v12.75" />
-                        </svg>
-                      )}
-                    </div>
-                  </th>
-                  <th 
-                    scope="col" 
-                    className="px-4 py-3 sm:px-6 sm:py-4 cursor-pointer hover:bg-gray-200 transition-colors"
-                    onClick={() => handleSort('salary')}
-                  >
-                    <div className="flex items-center gap-2">
-                      Monthly Salary
-                      {sortBy === 'salary' && (
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={`h-4 w-4 ${sortOrder === 'asc' ? '' : 'rotate-180'}`}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h5.25m5.25-.75L17.25 9m0 0L21 12.75M17.25 9v12.75" />
-                        </svg>
-                      )}
-                    </div>
-                  </th>
-                  <th scope="col" className="px-4 py-3 sm:px-6 sm:py-4">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 text-xs sm:text-sm">
-                {loading ? (
-                  <tr><td colSpan="5" className="px-4 py-8 text-center">
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-                      <span>Loading employees...</span>
-                    </div>
-                  </td></tr>
-                ) : error ? (
-                  <tr><td colSpan="5" className="px-4 py-8 text-center">
-                    <div className="rounded-lg border border-red-200 bg-red-50 p-4 max-w-md mx-auto">
-                      <p className="text-red-800 font-semibold mb-2">Error Loading Employees</p>
-                      <p className="text-red-700 text-sm mb-3">{error}</p>
-                      <button
-                        onClick={fetchEmployees}
-                        className="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700"
+        <section className="grid gap-4 sm:gap-6 lg:grid-cols-[1.1fr_1fr_1fr]">
+          <div className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4 lg:p-6">
+            <h2 className="text-base sm:text-lg font-semibold">Monthly Metrics</h2>
+            <div className="mt-3 sm:mt-4 -mx-2 overflow-x-auto sm:mx-0">
+              <div className="inline-block min-w-full align-middle">
+                <div className="overflow-hidden rounded-xl border border-gray-200">
+              <table className="w-full text-left text-xs sm:text-sm">
+                <thead className="bg-gray-50 text-[0.65rem] sm:text-xs font-semibold  tracking-[0.05em] text-gray-500">
+                  <tr>
+                    <th className="px-2 py-2 sm:px-4 sm:py-3">Month</th>
+                    <th className="px-2 py-2 sm:px-4 sm:py-3 text-center">Hired</th>
+                    <th className="px-2 py-2 sm:px-4 sm:py-3 text-center">Days to Hire</th>
+                    <th className="px-2 py-2 sm:px-4 sm:py-3 text-center">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {monthlyMetrics.map((row, index) => (
+                    <tr
+                      key={row.month}
+                      className="bg-white"
+                    >
+                      <td className="px-2 py-2 sm:px-4 sm:py-3 font-medium text-xs sm:text-sm">{row.month}</td>
+                      <td
+                        className={`px-2 py-2 sm:px-4 sm:py-3 text-center text-sm sm:text-base font-semibold ${
+                          row.hired === "1" ? "text-indigo-600" : "text-gray-900"
+                        }`}
                       >
-                        Retry
-                      </button>
-                    </div>
-                  </td></tr>
-                ) : filteredAndSorted.length === 0 ? (
-                  <tr><td colSpan="5" className="px-4 py-8 text-center">
-                    <div className="text-gray-500">
-                      <p className="mb-2">No employees found</p>
-                      {employees.length === 0 ? (
-                        <p className="text-sm">Please add employees from <NavLink to="/admin/employees" className="text-blue-600 hover:underline">Admin Panel</NavLink></p>
-                      ) : (
-                        <p className="text-sm">Try adjusting your search or filters</p>
-                      )}
-                    </div>
-                  </td></tr>
-                ) : filteredAndSorted.map((employee, idx) => {
-                  const colorIndex = idx % employeeColors.length;
-                  const bgColor = `${employeeColors[colorIndex]}15`;
-                  const borderColor = `${employeeColors[colorIndex]}40`;
-                  const textColor = employeeColors[colorIndex];
-                  
-                  return (
-                    <tr key={employee.id} className="transition-all hover:bg-gray-50 hover:shadow-sm">
-                      <td className="px-4 py-3 sm:px-6 sm:py-4">
-                        <div className="flex items-center gap-3">
-                          <span 
-                            className="flex h-9 w-9 items-center justify-center rounded-full text-xs font-semibold text-white sm:h-10 sm:w-10 sm:text-sm"
-                            style={{ backgroundColor: employeeColors[colorIndex] }}
-                          >
-                            {employee.name
-                              .split(' ')
-                              .slice(0, 2)
-                              .map((part) => part[0])
-                              .join('')}
-                          </span>
-                          <div>
-                            <p className="text-sm font-semibold sm:text-base">{employee.name}</p>
-                            <p className="text-[0.6rem] font-medium uppercase tracking-[0.25em] text-gray-500 sm:text-xs">{employee.id}</p>
-                          </div>
-                        </div>
+                        {row.hired}
                       </td>
-                      <td className="px-4 py-3 sm:px-6 sm:py-4">
-                        <div className="text-sm">
-                          {employee.email && <p className="text-gray-900">{employee.email}</p>}
-                          {employee.phone && <p className="text-gray-500">{employee.phone}</p>}
-                        </div>
+                      <td
+                        className={`px-2 py-2 sm:px-4 sm:py-3 text-center text-sm sm:text-base font-semibold ${
+                          row.daysToHire === "6" ? "text-indigo-600" : "text-gray-900"
+                        }`}
+                      >
+                        {row.daysToHire}
                       </td>
-                      <td className="px-4 py-3 sm:px-6 sm:py-4">
-                        <span 
-                          className="inline-flex items-center rounded-full px-2.5 py-1 text-[0.65rem] font-medium"
-                          style={{
-                            backgroundColor: bgColor,
-                            color: textColor,
-                          }}
-                        >
-                          {employee.department}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 sm:px-6 sm:py-4">
-                        <span 
-                          className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold"
-                          style={{
-                            backgroundColor: bgColor,
-                            color: textColor,
-                            borderWidth: '1px',
-                            borderStyle: 'solid',
-                            borderColor: borderColor,
-                          }}
-                        >
-                          {employee.monthlySalary}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 sm:px-6 sm:py-4">
-                        <span 
-                          className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                            employee.status === 'Active' ? 'bg-green-100 text-green-800' : 
-                            employee.status === 'Inactive' ? 'bg-gray-100 text-gray-800' :
-                            'bg-yellow-100 text-yellow-800'
-                          }`}
-                        >
-                          {employee.status}
+                      <td className="px-2 py-2 sm:px-4 sm:py-3 text-center">
+                        <span className="inline-flex items-center justify-center rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 sm:px-3 sm:py-1 text-[0.6rem] sm:text-[0.65rem] font-semibold  tracking-[0.05em] text-gray-700">
+                          {row.status}
                         </span>
                       </td>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                  ))}
+                </tbody>
+                </table>
+              </div>
+            </div>
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4 lg:p-6">
+            <h2 className="text-base sm:text-lg font-semibold">Recruitment Funnel</h2>
+            <div className="mt-3 sm:mt-4 h-56 sm:h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <FunnelChart>
+                  <Tooltip 
+                    formatter={(value) => `${value}%`} 
+                    contentStyle={{ 
+                      backgroundColor: "#FFFFFF", 
+                      borderColor: "#E5E7EB", 
+                      borderRadius: "12px", 
+                      color: "#111827",
+                      fontSize: isMobile ? '12px' : '14px'
+                    }} 
+                  />
+                  <Funnel
+                    dataKey="value"
+                    data={funnelData}
+                    isAnimationActive={false}
+                    fill="#A020F0"
+                    stroke="none"
+                  >
+                    {funnelData.map((entry, index) => (
+                      <Cell key={entry.name} fill={funnelColors[index]} />
+                    ))}
+                    <LabelList
+                      position="right"
+                      fill="#111827"
+                      stroke="none"
+                      dataKey="name"
+                      formatter={(value, entry) => (entry?.name ? entry.name : value ?? "")}
+                      style={{ fontSize: isMobile ? '10px' : '12px' }}
+                    />
+                    <LabelList
+                      position="inside"
+                      fill="#111827"
+                      stroke="none"
+                      dataKey="value"
+                      formatter={(value) => (value !== undefined ? `${value}%` : "")}
+                      style={{ fontSize: isMobile ? '10px' : '12px', fontWeight: 'bold' }}
+                    />
+                  </Funnel>
+                </FunnelChart>
+              </ResponsiveContainer>
+            </div>
+            <ul className="mt-3 sm:mt-4 space-y-2 sm:space-y-3">
+              {funnelInsights.map((item, index) => (
+                <li key={item.stage} className="rounded-lg border border-gray-200 bg-white px-3 py-2 sm:px-4 sm:py-3">
+                  <p className="text-[0.65rem] sm:text-xs font-semibold  tracking-[0.05em] text-gray-500">{item.stage}</p>
+                  <div className="mt-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0 text-xs sm:text-sm">
+                    <span className="font-semibold" style={{ color: funnelColors[index % funnelColors.length] }}>{item.drop}</span>
+                    <span className="text-gray-600">{item.note}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4 lg:p-6">
+            <h2 className="text-base sm:text-lg font-semibold">Pipeline Efficiency of Hiring</h2>
+            <p className="mt-1 text-[0.65rem] sm:text-xs font-medium  tracking-[0.05em] text-gray-500">
+              Days taken for each stage in recruitment process
+            </p>
+            <div className="mt-2 h-56 sm:h-72">
+              <ResponsiveContainer>
+                <PieChart>
+                  <Tooltip 
+                    formatter={(value) => `${value}%`} 
+                    contentStyle={{ 
+                      backgroundColor: "#FFFFFF", 
+                      borderColor: "#E5E7EB", 
+                      borderRadius: "12px", 
+                      color: "#111827",
+                      fontSize: isMobile ? '12px' : '14px'
+                    }} 
+                  />
+                  <Pie
+                    data={pipelineData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={isMobile ? "50%" : "55%"}
+                    outerRadius={isMobile ? "85%" : "90%"}
+                    stroke="none"
+                  >
+                    {pipelineData.map((entry, index) => (
+                      <Cell key={entry.name} fill={pipelineColors[index % pipelineColors.length]} />
+                    ))}
+                  </Pie>
+                  <text
+                    x="50%"
+                    y="50%"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className="fill-gray-900 text-xl sm:text-2xl font-semibold"
+                  >
+                    100%
+                  </text>
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <ul className="mt-3 sm:mt-4 grid grid-cols-1 gap-2 sm:gap-3 text-xs sm:text-sm sm:grid-cols-2">
+              {pipelineData.map((stage, index) => (
+                <li
+                  key={stage.name}
+                  className="flex items-start gap-2 sm:gap-3 rounded-lg border border-gray-200 bg-white px-3 py-2 sm:px-3.5 sm:py-3"
+                >
+                  <span
+                    className="mt-1 h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full flex-shrink-0"
+                    style={{ 
+                      backgroundColor: pipelineColors[index % pipelineColors.length],
+                      boxShadow: `0 0 0 2px ${pipelineColors[index % pipelineColors.length]}40`
+                    }}
+                    aria-hidden="true"
+                  />
+                  <div>
+                    <p className="text-xs sm:text-sm font-semibold">{stage.name}</p>
+                    <p className="text-[0.65rem] sm:text-xs text-gray-500">{stage.description}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
+
+        <section className="grid gap-2 sm:gap-3 lg:gap-4 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4">
+          {highlightCards.map((card) => (
+            <article
+              key={card.title}
+              className="flex flex-col gap-1 sm:gap-1.5 lg:gap-3 rounded-lg border border-gray-200 bg-white p-2 sm:p-2.5 lg:p-4 xl:p-6"
+            >
+              <span className={`inline-flex w-max items-center rounded-full border border-indigo-200 bg-indigo-50 px-1.5 py-0.5 sm:px-2 sm:py-0.5 lg:px-3 lg:py-1 text-[0.5rem] sm:text-[0.65rem] lg:text-xs font-semibold  tracking-[0.15em] sm:tracking-[0.05em] text-indigo-700 leading-tight`}>
+                {card.title}
+              </span>
+              <p className={`${card.title === "Sourcing Channel" ? "text-[0.7rem] sm:text-base lg:text-lg" : "text-xs sm:text-base lg:text-lg"} font-semibold leading-tight break-words`}>{card.value}</p>
+              <p className={`${card.title === "Sourcing Channel" ? "text-[0.55rem] sm:text-xs lg:text-sm" : "text-[0.6rem] sm:text-xs lg:text-sm"} text-gray-600 leading-tight break-words line-clamp-2`}>{card.description}</p>
+            </article>
+          ))}
+        </section>
+
+          <p className="mt-4 text-center text-xs text-gray-500">
+          This graph/chart is linked to Excel, and changes automatically based on data. Just left click on it and select "Edit Data".
+        </p>
+        </div>
       </main>
       <Footer />
     </div>

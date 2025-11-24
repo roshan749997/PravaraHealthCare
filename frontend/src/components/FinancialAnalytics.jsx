@@ -6,6 +6,7 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
+  ComposedChart,
   Legend,
   Line,
   LineChart,
@@ -115,20 +116,20 @@ const expenseBreakdown = [
 ];
 
 const forecastData = [
-  { month: "Jan", income: 36, expense: 31 },
-  { month: "Feb", income: 38, expense: 32 },
-  { month: "Mar", income: 41, expense: 34 },
-  { month: "Apr", income: 44, expense: 35 },
-  { month: "May", income: 39, expense: 37 },
-  { month: "Jun", income: 46, expense: 38 },
-  { month: "Jul", income: 48, expense: 39 },
-  { month: "Aug", income: 50, expense: 41 },
+  { month: "Jan", income: 36, expense: 31, net: 5 },
+  { month: "Feb", income: 38, expense: 32, net: 6 },
+  { month: "Mar", income: 41, expense: 34, net: 7 },
+  { month: "Apr", income: 44, expense: 35, net: 9 },
+  { month: "May", income: 39, expense: 37, net: 2 },
+  { month: "Jun", income: 46, expense: 38, net: 8 },
+  { month: "Jul", income: 48, expense: 39, net: 9 },
+  { month: "Aug", income: 50, expense: 41, net: 9 },
 ];
 
 const metricCards = [
-  { title: "Total Income", value: 384567.45, change: "+8.7%", tone: "text-[#A020F0]", chip: "bg-[#A020F0]/20" },
-  { title: "Total Expenses", value: 328942.6, change: "-6.3%", tone: "text-[#FF00CC]", chip: "bg-[#FF00CC]/20" },
-  { title: "Total Net Income", value: 55624.85, change: "+21.4%", tone: "text-[#A020F0]", chip: "bg-[#A020F0]/20" },
+  { title: "Total Income", value: 384567.45, change: "+8.7%", bgColor: "#FEF3C7", textColor: "#F59E0B" },
+  { title: "Total Expenses", value: 328942.6, change: "-6.3%", bgColor: "#FEE2E2", textColor: "#EF4444" },
+  { title: "Total Net Income", value: 55624.85, change: "+21.4%", bgColor: "#D1FAE5", textColor: "#10B981" },
 ];
 
 const incomeTotal = incomeBreakdown.reduce((sum, item) => sum + item.value, 0);
@@ -169,7 +170,7 @@ export default function FinancialAnalytics() {
     <section className="rounded-3xl border border-gray-200 bg-white shadow-sm">
       <header className="flex flex-col gap-2 border-b border-gray-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-gray-500">Analytics · Summary</p>
+          <p className="text-[0.65rem] font-semibold  tracking-[0.05em] text-gray-500">Analytics · Summary</p>
           <h2 className="mt-1 text-xl font-semibold sm:text-2xl">Financial analytics</h2>
         </div>
         <div className="flex flex-wrap gap-2 text-[0.65rem] font-medium">
@@ -183,7 +184,7 @@ export default function FinancialAnalytics() {
         <article className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-col">
-              <h3 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.28em] text-gray-500">Monthly Income & Expenses</h3>
+              <h3 className="text-xs sm:text-sm font-semibold  tracking-[0.05em] text-gray-500">Monthly Income & Expenses</h3>
               <p className="text-[0.65rem] sm:text-xs text-gray-500">Income vs expenses · Jan - Dec 2024</p>
             </div>
             <span className="rounded-full border border-blue-200 bg-blue-50 px-2.5 sm:px-3 py-1 text-[0.65rem] sm:text-xs font-semibold text-blue-700 whitespace-nowrap">
@@ -307,12 +308,19 @@ export default function FinancialAnalytics() {
 
         <aside className="grid gap-3">
           {metricCards.map((card) => (
-            <div key={card.title} className="rounded-2xl border border-gray-200 bg-white p-4">
-              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-gray-500">{card.title}</p>
-              <p className="mt-2 text-xl font-semibold">{formatCurrency(card.value)}</p>
-              <span className={`mt-1.5 inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[0.65rem] font-semibold text-gray-700`}>
-                {card.change}
-              </span>
+            <div 
+              key={card.title} 
+              className="rounded-xl border border-gray-200 p-3 sm:p-4"
+              style={{ backgroundColor: card.bgColor }}
+            >
+              <p className="text-[0.6rem] font-medium  tracking-[0.05em] text-gray-500 sm:text-xs">{card.title}</p>
+              <p 
+                className="mt-2 text-xl font-semibold sm:text-2xl"
+                style={{ color: card.textColor }}
+              >
+                {formatCurrency(card.value)}
+              </p>
+              <p className="mt-1 text-[0.65rem] font-medium text-gray-600 sm:text-xs">{card.change}</p>
             </div>
           ))}
         </aside>
@@ -321,8 +329,8 @@ export default function FinancialAnalytics() {
       <div className="grid gap-4 border-t border-gray-200 px-4 py-4 lg:grid-cols-3">
         <article className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.28em] text-gray-500">Income Overview</h3>
-            <span className="rounded-full border border-purple-200 bg-purple-50 px-2.5 py-1 text-[0.6rem] sm:text-xs uppercase tracking-[0.25em] text-purple-700">
+            <h3 className="text-xs sm:text-sm font-semibold  tracking-[0.05em] text-gray-500">Income Overview</h3>
+            <span className="rounded-full border border-purple-200 bg-purple-50 px-2.5 py-1 text-[0.6rem] sm:text-xs  tracking-[0.05em] text-purple-700">
               3 Sources
             </span>
           </div>
@@ -382,8 +390,8 @@ export default function FinancialAnalytics() {
 
         <article className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 overflow-visible">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.28em] text-gray-500">Expense Analysis</h3>
-            <span className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[0.6rem] sm:text-xs uppercase tracking-[0.25em] text-gray-700">
+            <h3 className="text-xs sm:text-sm font-semibold  tracking-[0.05em] text-gray-500">Expense Analysis</h3>
+            <span className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[0.6rem] sm:text-xs  tracking-[0.05em] text-gray-700">
               {expenseTotalTransactions} Transactions
             </span>
           </div>
@@ -479,15 +487,15 @@ export default function FinancialAnalytics() {
                   dominantBaseline="middle" 
                   textAnchor="middle" 
                   fill="#111827" 
-                  fontSize={isMobile ? 16 : 20} 
+                  fontSize={isMobile ? 12 : 20} 
                   fontWeight="600"
                 >
                   {selectedExpense ? (
-                    <tspan x="50%" dy="-0.5em">{selectedExpense.value}%</tspan>
+                    <tspan x="50%" dy="0">{selectedExpense.value}%</tspan>
                   ) : (
                     <>
-                      <tspan x="50%" dy="-0.5em">{formatCurrency(expenseTotal)}</tspan>
-                      <tspan x="50%" dy="1.2em" fontSize={isMobile ? 10 : 12} fill="#6B7280">Total</tspan>
+                      <tspan x="50%" dy={isMobile ? "-0.3em" : "-0.5em"} fontSize={isMobile ? 12 : 20}>{formatCurrency(expenseTotal)}</tspan>
+                      <tspan x="50%" dy={isMobile ? "1em" : "1.2em"} fontSize={isMobile ? 8 : 12} fill="#6B7280" fontWeight="500">Total</tspan>
                     </>
                   )}
                 </text>
@@ -521,14 +529,14 @@ export default function FinancialAnalytics() {
 
         <article className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.28em] text-gray-500">Financial Forecast</h3>
-            <span className="rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-[0.6rem] sm:text-xs uppercase tracking-[0.25em] text-blue-700">
+            <h3 className="text-xs sm:text-sm font-semibold  tracking-[0.05em] text-gray-500">Financial Forecast</h3>
+            <span className="rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-[0.6rem] sm:text-xs  tracking-[0.05em] text-blue-700">
               8-Month Projection
             </span>
           </div>
           <div className="mt-4 h-48 sm:h-56 md:h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart 
+              <ComposedChart 
                 data={forecastData} 
                 margin={{ 
                   top: 20, 
@@ -538,17 +546,31 @@ export default function FinancialAnalytics() {
                 }}
               >
                 <defs>
-                  <linearGradient id="forecastIncomeGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#8B5CF6" stopOpacity={0.4} />
-                    <stop offset="100%" stopColor="#8B5CF6" stopOpacity={0.05} />
+                  <linearGradient id="forecastIncomeBarGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#8B5CF6" stopOpacity={1} />
+                    <stop offset="50%" stopColor="#A78BFA" stopOpacity={0.9} />
+                    <stop offset="100%" stopColor="#8B5CF6" stopOpacity={0.8} />
                   </linearGradient>
-                  <linearGradient id="forecastExpenseGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#10B981" stopOpacity={0.4} />
-                    <stop offset="100%" stopColor="#10B981" stopOpacity={0.05} />
+                  <linearGradient id="forecastExpenseBarGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#10B981" stopOpacity={1} />
+                    <stop offset="50%" stopColor="#34D399" stopOpacity={0.9} />
+                    <stop offset="100%" stopColor="#10B981" stopOpacity={0.8} />
                   </linearGradient>
+                  <linearGradient id="netIncomeGradient" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#F59E0B" stopOpacity={1} />
+                    <stop offset="50%" stopColor="#FBBF24" stopOpacity={1} />
+                    <stop offset="100%" stopColor="#F59E0B" stopOpacity={1} />
+                  </linearGradient>
+                  <filter id="glow">
+                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                    <feMerge>
+                      <feMergeNode in="coloredBlur"/>
+                      <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                  </filter>
                 </defs>
                 <CartesianGrid 
-                  stroke="rgba(99, 102, 241, 0.15)" 
+                  stroke="rgba(99, 102, 241, 0.1)" 
                   strokeDasharray="3 3" 
                   vertical={false}
                   strokeWidth={1}
@@ -565,6 +587,21 @@ export default function FinancialAnalytics() {
                   tickLine={{ stroke: "#E5E7EB" }}
                 />
                 <YAxis 
+                  yAxisId="left"
+                  stroke="#9CA3AF" 
+                  tick={{ 
+                    fill: "#6B7280", 
+                    fontSize: isMobile ? 10 : 12,
+                    fontWeight: 500
+                  }}
+                  tickFormatter={(value) => `₹${value}L`}
+                  axisLine={{ stroke: "#E5E7EB", strokeWidth: 1 }}
+                  tickLine={{ stroke: "#E5E7EB" }}
+                  width={isMobile ? 45 : 60}
+                />
+                <YAxis 
+                  yAxisId="right"
+                  orientation="right"
                   stroke="#9CA3AF" 
                   tick={{ 
                     fill: "#6B7280", 
@@ -577,43 +614,46 @@ export default function FinancialAnalytics() {
                   width={isMobile ? 45 : 60}
                 />
                 <Tooltip
-                  cursor={{ stroke: "#6366F1", strokeWidth: 1, strokeDasharray: "5 5" }}
+                  cursor={{ fill: "rgba(139, 92, 246, 0.1)" }}
                   labelFormatter={(label) => `Month: ${label}`}
                   content={({ active, payload, label }) => {
                     if (!active || !payload || !payload.length) return null;
                     const monthData = forecastData.find(d => d.month === label);
-                    const net = monthData ? (monthData.income - monthData.expense).toFixed(1) : 0;
+                    const net = monthData ? monthData.net : 0;
                     
                     return (
-                      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xl" style={{ minWidth: "200px" }}>
+                      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xl" style={{ minWidth: "220px" }}>
                         <div className="space-y-2">
                           <div className="font-semibold text-sm border-b border-gray-200 pb-2 text-gray-900">
                             Month: {label}
                           </div>
-                          {payload.map((entry, index) => (
-                            <div key={index} className="flex items-center justify-between gap-4">
-                              <div className="flex items-center gap-2">
-                                <div 
-                                  className="h-3 w-3 rounded-full" 
-                                  style={{ backgroundColor: entry.color }}
-                                />
-                                <span className="text-sm text-gray-600">{entry.name}:</span>
-                              </div>
-                              <div className="text-right">
-                                <div 
-                                  className="text-sm font-semibold"
-                                  style={{ color: entry.color }}
-                                >
-                                  ₹{Number(entry.value).toFixed(1)}L
+                          {payload.map((entry, index) => {
+                            if (entry.dataKey === 'net') return null;
+                            return (
+                              <div key={index} className="flex items-center justify-between gap-4">
+                                <div className="flex items-center gap-2">
+                                  <div 
+                                    className="h-3 w-3 rounded-full" 
+                                    style={{ backgroundColor: entry.color }}
+                                  />
+                                  <span className="text-sm text-gray-600">{entry.name}:</span>
+                                </div>
+                                <div className="text-right">
+                                  <div 
+                                    className="text-sm font-semibold"
+                                    style={{ color: entry.color }}
+                                  >
+                                    ₹{Number(entry.value).toFixed(1)}L
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          ))}
+                            );
+                          })}
                           <div className="pt-2 border-t border-gray-200">
                             <div className="flex items-center justify-between">
-                              <span className="text-sm text-gray-600">Net:</span>
-                              <span className={`text-sm font-semibold ${parseFloat(net) >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                                ₹{net}L
+                              <span className="text-sm text-gray-600">Net Income:</span>
+                              <span className={`text-sm font-semibold ${net >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                                ₹{net.toFixed(1)}L
                               </span>
                             </div>
                           </div>
@@ -625,7 +665,7 @@ export default function FinancialAnalytics() {
                 <Legend 
                   verticalAlign="top"
                   align="right"
-                  iconType="line" 
+                  iconType="rect" 
                   wrapperStyle={{ 
                     color: "#111827", 
                     fontSize: "12px", 
@@ -633,76 +673,73 @@ export default function FinancialAnalytics() {
                   }} 
                 />
                 <ReferenceLine 
-                  x="May" 
-                  stroke="#F59E0B" 
-                  strokeWidth={2} 
-                  strokeDasharray="5 5"
-                  label={{ 
-                    value: "May Focus", 
-                    position: "top", 
-                    fill: "#F59E0B",
-                    fontSize: 11,
-                    fontWeight: 600,
-                  }}
+                  yAxisId="right"
+                  y={0} 
+                  stroke="#6B7280" 
+                  strokeWidth={1}
+                  strokeDasharray="2 2"
+                  strokeOpacity={0.5}
                 />
-                <Area
-                  type="monotone"
-                  dataKey="income"
-                  stroke="none"
-                  fill="url(#forecastIncomeGradient)"
-                  fillOpacity={0.4}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="expense"
-                  stroke="none"
-                  fill="url(#forecastExpenseGradient)"
-                  fillOpacity={0.4}
-                />
-                <Line 
-                  type="monotone" 
+                <Bar 
+                  yAxisId="left"
                   dataKey="income" 
                   name="Income" 
-                  stroke="#8B5CF6" 
-                  strokeWidth={isMobile ? 2.5 : 3}
-                  dot={{ 
-                    fill: "#8B5CF6", 
-                    r: isMobile ? 4 : 5, 
-                    strokeWidth: 2, 
-                    stroke: "#FFFFFF" 
-                  }}
-                  activeDot={{ 
-                    r: isMobile ? 6 : 7, 
-                    fill: "#8B5CF6",
-                    strokeWidth: 2,
-                    stroke: "#FFFFFF"
-                  }}
+                  fill="url(#forecastIncomeBarGradient)" 
+                  radius={[8, 8, 0, 0]}
                   animationDuration={1500}
                   animationEasing="ease-out"
+                  barSize={isMobile ? 20 : 28}
                 />
-                <Line 
-                  type="monotone" 
+                <Bar 
+                  yAxisId="left"
                   dataKey="expense" 
                   name="Expenses" 
-                  stroke="#10B981" 
-                  strokeWidth={isMobile ? 2.5 : 3}
+                  fill="url(#forecastExpenseBarGradient)" 
+                  radius={[8, 8, 0, 0]}
+                  animationDuration={1500}
+                  animationEasing="ease-out"
+                  barSize={isMobile ? 20 : 28}
+                />
+                <Line 
+                  yAxisId="right"
+                  type="monotone" 
+                  dataKey="net" 
+                  name="Net Income" 
+                  stroke="url(#netIncomeGradient)" 
+                  strokeWidth={isMobile ? 3 : 4}
                   dot={{ 
-                    fill: "#10B981", 
-                    r: isMobile ? 4 : 5, 
-                    strokeWidth: 2, 
-                    stroke: "#FFFFFF" 
+                    fill: "#F59E0B", 
+                    r: isMobile ? 5 : 6, 
+                    strokeWidth: 3, 
+                    stroke: "#FFFFFF",
+                    filter: "url(#glow)"
                   }}
                   activeDot={{ 
-                    r: isMobile ? 6 : 7, 
-                    fill: "#10B981",
-                    strokeWidth: 2,
-                    stroke: "#FFFFFF"
+                    r: isMobile ? 7 : 8, 
+                    fill: "#F59E0B",
+                    strokeWidth: 3,
+                    stroke: "#FFFFFF",
+                    filter: "url(#glow)"
                   }}
                   animationDuration={1500}
                   animationEasing="ease-out"
                 />
-              </LineChart>
+              </ComposedChart>
             </ResponsiveContainer>
+          </div>
+          <div className="mt-4 grid grid-cols-3 gap-2 sm:gap-3">
+            {forecastData.slice(-3).map((item, idx) => {
+              const netColor = item.net >= 0 ? 'text-emerald-600' : 'text-red-600';
+              const bgColor = item.net >= 0 ? 'bg-emerald-50' : 'bg-red-50';
+              return (
+                <div key={idx} className={`rounded-lg p-2 sm:p-3 ${bgColor} border border-gray-200`}>
+                  <p className="text-[0.6rem] font-medium text-gray-600 sm:text-xs">{item.month}</p>
+                  <p className={`mt-1 text-sm font-bold sm:text-base ${netColor}`}>
+                    ₹{item.net.toFixed(1)}L
+                  </p>
+                </div>
+              );
+            })}
           </div>
           <div className="mt-4 p-3 rounded-lg bg-amber-50 border border-amber-200">
             <p className="text-[0.65rem] sm:text-xs leading-relaxed text-amber-800">

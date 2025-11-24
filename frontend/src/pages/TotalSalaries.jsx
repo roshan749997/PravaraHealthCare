@@ -1,75 +1,13 @@
-import { useState, useMemo, useEffect } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import Navbar from '../components/Navbar.jsx'
 import Footer from '../components/Footer.jsx'
 import { NavLink } from 'react-router-dom'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, Legend } from 'recharts'
-import { api, formatCurrency } from '../utils/api.js'
 
 // Employee Distribution colors
 const employeeColors = ["#F59E0B", "#DC2626", "#84CC16", "#06B6D4", "#6B7280"];
 
-export default function TotalSalaries() {
-  const [totalSalaryData, setTotalSalaryData] = useState([]);
-  const [allowanceSummary, setAllowanceSummary] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('')
-  const [sortBy, setSortBy] = useState('name')
-  const [sortOrder, setSortOrder] = useState('asc')
-  const [filterDept, setFilterDept] = useState('All')
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      const currentDate = new Date();
-      const currentMonth = currentDate.getMonth() + 1;
-      const currentYear = currentDate.getFullYear();
-
-      const [employeesRes, allowancesRes, summaryRes] = await Promise.all([
-        api.getEmployees({ status: 'Active' }),
-        api.getAllowances({ month: currentMonth, year: currentYear }),
-        api.getAllowanceSummary({ month: currentMonth, year: currentYear })
-      ]);
-
-      if (employeesRes.success && allowancesRes.success) {
-        const employees = employeesRes.data.employees;
-        const allowances = allowancesRes.data;
-        
-        // Combine employee data with allowances
-        const combinedData = employees.map(emp => {
-          const allowance = allowances.find(a => 
-            a.employeeId._id === emp._id || a.employeeId === emp._id
-          );
-          
-          return {
-            id: emp.employeeId,
-            name: emp.name,
-            monthlySalary: formatCurrency(emp.salary.monthly),
-            mobileRecharge: formatCurrency(allowance?.mobileRecharge || 0),
-            fuelExpense: `${formatCurrency(allowance?.petrolDiesel?.amount || 0)} · ${allowance?.petrolDiesel?.vehicleNumber || 'N/A'}`,
-            monthlyIncentive: formatCurrency(allowance?.incentive || 0),
-            giftVoucher: formatCurrency(allowance?.gifts || 0),
-            department: emp.department,
-            _id: emp._id
-          };
-        });
-        
-        setTotalSalaryData(combinedData);
-      }
-
-      if (summaryRes.success) {
-        setAllowanceSummary(summaryRes.data);
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const mockTotalSalaryData = [
+const totalSalaryData = [
   {
     id: 'EMP-001',
     name: 'Dr. Kavita Kulkarni',
@@ -173,12 +111,14 @@ export default function TotalSalaries() {
 ]
 
 const parseCurrency = (value) => Number(value.replace(/[^0-9.]/g, ''))
+const formatCurrency = (value) =>
+  new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value)
 
 const totalMonthlySalary = totalSalaryData.reduce((sum, employee) => sum + parseCurrency(employee.monthlySalary), 0)
-  const totalRecharge = allowanceSummary?.totalRecharge || totalSalaryData.reduce((sum, employee) => sum + parseCurrency(employee.mobileRecharge), 0)
-  const totalIncentives = allowanceSummary?.totalIncentive || totalSalaryData.reduce((sum, employee) => sum + parseCurrency(employee.monthlyIncentive), 0)
-  const totalVouchers = allowanceSummary?.totalGifts || totalSalaryData.reduce((sum, employee) => sum + parseCurrency(employee.giftVoucher), 0)
-  const totalFuel = allowanceSummary?.totalPetrol || totalSalaryData.reduce((sum, employee) => sum + parseCurrency(employee.fuelExpense.split('·')[0]), 0)
+const totalRecharge = totalSalaryData.reduce((sum, employee) => sum + parseCurrency(employee.mobileRecharge), 0)
+const totalIncentives = totalSalaryData.reduce((sum, employee) => sum + parseCurrency(employee.monthlyIncentive), 0)
+const totalVouchers = totalSalaryData.reduce((sum, employee) => sum + parseCurrency(employee.giftVoucher), 0)
+const totalFuel = totalSalaryData.reduce((sum, employee) => sum + parseCurrency(employee.fuelExpense.split('·')[0]), 0)
 const totalAllowances = totalRecharge + totalIncentives + totalVouchers + totalFuel
 
 // Compensation breakdown chart data
@@ -211,6 +151,24 @@ const departmentChartData = Object.values(departmentCompensation).map((dept, idx
   avg: Math.round(dept.total / dept.count),
   color: employeeColors[idx % employeeColors.length],
 }));
+
+export default function TotalSalaries() {
+  const [searchTerm, setSearchTerm] = useState('')
+  const [sortBy, setSortBy] = useState('name')
+  const [sortOrder, setSortOrder] = useState('asc')
+  const [filterDept, setFilterDept] = useState('All')
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   const departments = ['All', ...new Set(totalSalaryData.map(emp => emp.department))]
 
@@ -255,74 +213,59 @@ const departmentChartData = Object.values(departmentCompensation).map((dept, idx
       setSortOrder('asc')
     }
   }
-
-  const handleExportTotalSalaries = () => {
-    try {
-      const csvHeader = 'Employee ID,Name,Department,Monthly Salary,Mobile Recharge,Petrol/Diesel,Vehicle Number,Incentive,Gifts\n';
-      const csvRows = filteredAndSorted.map(emp => {
-        const fuelParts = emp.fuelExpense.split('·');
-        const fuelAmount = fuelParts[0]?.trim() || '₹0';
-        const vehicleNumber = fuelParts[1]?.trim() || 'N/A';
-        return `${emp.id},"${emp.name}",${emp.department},${emp.monthlySalary},${emp.mobileRecharge},${fuelAmount},"${vehicleNumber}",${emp.monthlyIncentive},${emp.giftVoucher}`;
-      }).join('\n');
-      
-      const blob = new Blob([csvHeader + csvRows], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `total_salaries_export_${new Date().toISOString().split('T')[0]}.csv`;
-      a.click();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      alert('Error exporting total salaries data');
-    }
-  }
-
   return (
     <div className="flex min-h-screen flex-col bg-gray-50 text-gray-900">
       <Navbar />
 
-      <main className="mx-auto flex w-full max-w-7xl grow flex-col gap-8 px-4 py-8 sm:gap-10 sm:px-6 sm:py-10">
-        <section className="relative overflow-hidden rounded-3xl border border-gray-200 bg-white px-5 py-8 shadow-sm sm:px-8 sm:py-10">
+      <main className="mx-auto flex w-full grow flex-col gap-8 px-4 py-8 sm:gap-10 sm:px-6 sm:py-10 lg:px-8 xl:px-12">
+        <section className="relative overflow-hidden rounded-3xl border border-gray-200 px-5 py-8 shadow-sm sm:px-8 sm:py-10" style={{ backgroundColor: '#1e3a8a' }}>
           <div className="relative grid gap-6 lg:grid-cols-[1.25fr_1fr] lg:items-center">
             <div>
-              <span className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.3em] text-gray-700 sm:text-xs">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[0.6rem] font-semibold  tracking-[0.05em] text-white/90 sm:text-xs">
                 Total salaries
               </span>
-              <h1 className="mt-4 text-2xl font-semibold sm:text-3xl lg:text-4xl">
+              <h1 className="mt-4 text-2xl font-semibold text-white sm:text-3xl lg:text-4xl">
                 Comprehensive compensation breakdown
               </h1>
-              <p className="mt-3 max-w-2xl text-xs text-gray-600 sm:mt-4 sm:text-sm">
+              <p className="mt-3 max-w-2xl text-xs text-white/80 sm:mt-4 sm:text-sm">
                 Complete breakdown of all employee compensation: Salary, Incentives, Gifts, Petrol/Diesel expenses, and Mobile Recharge. Track every component for accurate financial management.
               </p>
               <div className="mt-5 flex flex-wrap gap-2.5 sm:mt-6 sm:gap-3">
                 <NavLink
                   to="/payroll"
-                  className="inline-flex items-center gap-2 rounded-md border border-blue-600 px-3 py-2 text-xs font-semibold text-blue-600 hover:bg-blue-50 sm:px-4 sm:text-sm"
+                  className="inline-flex items-center gap-2 rounded-md border border-white/30 bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/20 sm:px-4 sm:text-sm transition-colors"
                 >
                   Back to payroll
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 8.25 3 12l3.75 3.75M3 12h18" />
                   </svg>
                 </NavLink>
-                <button 
-                  onClick={handleExportTotalSalaries}
-                  className="inline-flex items-center gap-2 rounded-md border border-green-600 px-3 py-2 text-xs font-semibold text-green-600 hover:bg-green-50 sm:px-4 sm:text-sm"
-                >
-                  📥 Export CSV
+                <button className="inline-flex items-center gap-2 rounded-md border border-white/30 bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/20 sm:px-4 sm:text-sm transition-colors">
+                  Export summary
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 20.25h12M12 3.75v12m0 0 3.75-3.75M12 15.75 8.25 12" />
                   </svg>
                 </button>
               </div>
             </div>
             <div className="grid gap-3 rounded-2xl border border-gray-200 bg-white p-4 sm:gap-4 sm:p-5">
-              {loading ? (
-                <div className="col-span-3 text-center py-4">Loading...</div>
-              ) : [{ label: 'Monthly salary payout', value: formatCurrency(totalMonthlySalary), detail: `${totalSalaryData.length} employees` }, { label: 'Monthly allowances', value: formatCurrency(totalAllowances), detail: 'All reimbursements combined' }, { label: 'Fuel reimbursements', value: formatCurrency(totalFuel), detail: 'With vehicle tracking' }].map((stat) => (
-                <div key={stat.label} className="rounded-xl border border-gray-200 bg-gray-50 p-3 sm:p-4">
-                  <p className="text-[0.6rem] font-medium uppercase tracking-[0.3em] text-gray-500 sm:text-xs">{stat.label}</p>
-                  <p className="mt-2 text-xl font-semibold sm:text-2xl">{stat.value}</p>
+              {[
+                { label: 'Monthly salary payout', value: formatCurrency(totalMonthlySalary), detail: '+5.1% QoQ', bgColor: '#FEF3C7', textColor: '#F59E0B' },
+                { label: 'Monthly allowances', value: formatCurrency(totalRecharge + totalIncentives + totalVouchers + totalFuel), detail: 'All reimbursements combined', bgColor: '#FEE2E2', textColor: '#EF4444' },
+                { label: 'Fuel reimbursements', value: formatCurrency(totalFuel), detail: 'With vehicle tracking', bgColor: '#D1FAE5', textColor: '#10B981' }
+              ].map((stat) => (
+                <div 
+                  key={stat.label} 
+                  className="rounded-xl border border-gray-200 p-3 sm:p-4"
+                  style={{ backgroundColor: stat.bgColor }}
+                >
+                  <p className="text-[0.6rem] font-medium  tracking-[0.05em] text-gray-500 sm:text-xs">{stat.label}</p>
+                  <p 
+                    className="mt-2 text-xl font-semibold sm:text-2xl"
+                    style={{ color: stat.textColor }}
+                  >
+                    {stat.value}
+                  </p>
                   <p className="mt-1 text-[0.65rem] font-medium text-gray-600 sm:text-xs">{stat.detail}</p>
                 </div>
               ))}
@@ -373,41 +316,95 @@ const departmentChartData = Object.values(departmentCompensation).map((dept, idx
               )
             }
           ].map((item) => {
-            const bgColor = `${item.color}15`;
-            const borderColor = `${item.color}40`;
+            // Add helper and badge properties
+            const cardData = {
+              ...item,
+              helper: item.helper || '+5% vs last month',
+              badge: item.badge || 'On Track',
+              color: item.color || employeeColors[0]
+            };
+            
+            // Update colors for different cards
+            if (item.label === 'Mobile Recharge') {
+              cardData.color = '#8B5CF6'; // Purple
+              cardData.helper = '+6.7% vs last month';
+              cardData.badge = 'On Track';
+            } else if (item.label === 'Incentive') {
+              cardData.color = '#EF4444'; // Red
+              cardData.helper = '+8.4% vs target';
+              cardData.badge = 'Growing';
+            } else if (item.label === 'Gifts') {
+              cardData.color = '#22C55E'; // Green
+              cardData.helper = '+10% vs budget';
+              cardData.badge = 'Above target';
+            } else if (item.label === 'Employees covered') {
+              cardData.color = '#06B6D4'; // Cyan
+              cardData.helper = 'All departments';
+              cardData.badge = 'Controlled';
+            }
             
             return (
-              <div 
-                key={item.label} 
-                className="rounded-lg bg-white p-4 sm:p-5 transition-all hover:shadow-lg"
-                style={{
-                  borderWidth: '1px',
-                  borderStyle: 'solid',
-                  borderColor: borderColor,
-                }}
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div 
-                    className="rounded-md p-2"
-                    style={{
-                      backgroundColor: bgColor,
-                      color: item.color,
-                    }}
-                  >
-                    {item.icon}
-                  </div>
-                </div>
-                <p className="text-[0.65rem] font-medium uppercase tracking-[0.25em] text-gray-500 sm:text-xs">{item.label}</p>
-                <p 
-                  className="mt-3 inline-flex items-center rounded-full px-3 py-1.5 text-xs font-semibold sm:text-sm"
+              <article
+                key={cardData.label}
+                className="relative rounded-lg p-3 sm:p-5 overflow-hidden shadow-lg cursor-pointer transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:brightness-110"
                   style={{
-                    backgroundColor: bgColor,
-                    color: item.color,
+                    backgroundColor: cardData.color,
+                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                    fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'",
+                  }}
+              >
+                {/* Large background icon */}
+                <div 
+                  className="absolute right-0 top-0 pointer-events-none"
+                  style={{
+                    transform: 'translate(15%, -15%)',
+                    opacity: 0.2,
                   }}
                 >
-                  {item.value}
-                </p>
-              </div>
+                  {React.cloneElement(cardData.icon, {
+                    className: 'h-20 w-20 sm:h-32 sm:w-32',
+                    style: { color: 'white', opacity: 0.2 }
+                  })}
+                </div>
+                
+                {/* Content */}
+                <div className="relative z-10 transition-transform duration-300">
+                  <div className="flex items-start justify-between mb-2 sm:mb-4">
+                    <span 
+                      className="rounded-full bg-white/20 px-2 py-0.5 sm:px-3 sm:py-1 text-[0.55rem] sm:text-[0.65rem] font-medium text-white transition-all duration-300 hover:bg-white/30"
+                      style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'" }}
+                    >
+                      {cardData.badge}
+                    </span>
+                  </div>
+                  <p 
+                    className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-1 transition-transform duration-300 hover:scale-105" 
+                    style={{ 
+                      letterSpacing: '-0.03em',
+                      fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'",
+                      fontWeight: 700
+                    }}
+                  >
+                    {cardData.value}
+                  </p>
+                  <h2 
+                    className="text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-2 transition-opacity duration-300"
+                    style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'" }}
+                  >
+                    {cardData.label}
+                  </h2>
+                  <p 
+                    className="text-xs sm:text-sm font-normal text-white/80 flex items-center gap-1 transition-transform duration-300" 
+                    style={{ 
+                      letterSpacing: '0',
+                      fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'"
+                    }}
+                  >
+                    <span className="transition-transform duration-300 hover:scale-125">{cardData.helper.includes('+') ? '↑' : ''}</span>
+                    {cardData.helper}
+                  </p>
+                </div>
+              </article>
             );
           })}
         </section>
@@ -416,7 +413,7 @@ const departmentChartData = Object.values(departmentCompensation).map((dept, idx
         <section className="grid gap-4 lg:grid-cols-2">
           {/* Compensation Breakdown */}
           <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
-            <h3 className="text-sm font-semibold uppercase tracking-[0.25em] text-gray-500 mb-4">Compensation Breakdown</h3>
+            <h3 className="text-sm font-semibold  tracking-[0.05em] text-gray-500 mb-4">Compensation Breakdown</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -425,10 +422,31 @@ const departmentChartData = Object.values(departmentCompensation).map((dept, idx
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={100}
+                    label={({ percent, cx, cy, midAngle, innerRadius, outerRadius }) => {
+                      const RADIAN = Math.PI / 180;
+                      const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+                      const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                      const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                      return (
+                        <text 
+                          x={x} 
+                          y={y} 
+                          fill="white" 
+                          textAnchor={x > cx ? 'start' : 'end'} 
+                          dominantBaseline="central"
+                          fontSize={isMobile ? 10 : 12}
+                          fontWeight="bold"
+                          style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.6)' }}
+                        >
+                          {(percent * 100).toFixed(0)}%
+                        </text>
+                      );
+                    }}
+                    outerRadius={isMobile ? 80 : 100}
+                    innerRadius={0}
                     fill="#8884d8"
                     dataKey="value"
+                    paddingAngle={3}
                   >
                     {compensationBreakdown.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
@@ -443,7 +461,7 @@ const departmentChartData = Object.values(departmentCompensation).map((dept, idx
 
           {/* Department Compensation */}
           <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
-            <h3 className="text-sm font-semibold uppercase tracking-[0.25em] text-gray-500 mb-4">Department Compensation</h3>
+            <h3 className="text-sm font-semibold  tracking-[0.05em] text-gray-500 mb-4">Department Compensation</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={departmentChartData}>
@@ -499,7 +517,7 @@ const departmentChartData = Object.values(departmentCompensation).map((dept, idx
         <section className="overflow-hidden rounded-3xl border border-gray-200 bg-white">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 text-left">
-              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 text-[0.65rem] font-semibold uppercase tracking-[0.25em] text-gray-500 sm:text-xs">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 text-[0.65rem] font-semibold  tracking-[0.05em] text-gray-500 sm:text-xs">
                 <tr>
                   <th 
                     scope="col" 
@@ -573,7 +591,7 @@ const departmentChartData = Object.values(departmentCompensation).map((dept, idx
                           </span>
                           <div>
                             <p className="text-sm font-semibold sm:text-base">{employee.name}</p>
-                            <p className="text-[0.6rem] font-medium uppercase tracking-[0.25em] text-gray-500 sm:text-xs">{employee.id}</p>
+                            <p className="text-[0.6rem] font-medium  tracking-[0.05em] text-gray-500 sm:text-xs">{employee.id}</p>
                           </div>
                         </div>
                       </td>
@@ -628,7 +646,7 @@ const departmentChartData = Object.values(departmentCompensation).map((dept, idx
                           >
                             {employee.fuelExpense.split('·')[0].trim()}
                           </span>
-                          <span className="text-[0.6rem] font-medium uppercase tracking-[0.25em] text-gray-500">
+                          <span className="text-[0.6rem] font-medium  tracking-[0.05em] text-gray-500">
                             {employee.fuelExpense.split('·')[1]?.trim() ?? '—'}
                           </span>
                         </div>

@@ -726,5 +726,3 @@ All APIs should follow RESTful conventions and return consistent JSON responses.
 **Project:** Pravara Health Clinic Management System
 **Status:** Ready for Backend Implementation
 
-
-
