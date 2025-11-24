@@ -248,7 +248,7 @@ export default function TotalSalaries() {
                 </button>
               </div>
             </div>
-            <div className="grid gap-3 rounded-2xl border border-gray-200 bg-white p-4 sm:gap-4 sm:p-5">
+            <div className="grid gap-3 rounded-2xl border border-gray-200 bg-white p-4 sm:gap-4 sm:p-5" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
               {[
                 { label: 'Monthly salary payout', value: formatCurrency(totalMonthlySalary), detail: '+5.1% QoQ', bgColor: '#FEF3C7', textColor: '#F59E0B' },
                 { label: 'Monthly allowances', value: formatCurrency(totalRecharge + totalIncentives + totalVouchers + totalFuel), detail: 'All reimbursements combined', bgColor: '#FEE2E2', textColor: '#EF4444' },
@@ -412,7 +412,7 @@ export default function TotalSalaries() {
         {/* Charts Section */}
         <section className="grid gap-4 lg:grid-cols-2">
           {/* Compensation Breakdown */}
-          <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
+          <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
             <h3 className="text-sm font-semibold  tracking-[0.05em] text-gray-500 mb-4">Compensation Breakdown</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -424,19 +424,22 @@ export default function TotalSalaries() {
                     labelLine={false}
                     label={({ percent, cx, cy, midAngle, innerRadius, outerRadius }) => {
                       const RADIAN = Math.PI / 180;
-                      const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+                      const radius = outerRadius + (isMobile ? 20 : 25);
                       const x = cx + radius * Math.cos(-midAngle * RADIAN);
                       const y = cy + radius * Math.sin(-midAngle * RADIAN);
                       return (
                         <text 
                           x={x} 
                           y={y} 
-                          fill="white" 
-                          textAnchor={x > cx ? 'start' : 'end'} 
+                          fill="#374151" 
+                          textAnchor="middle" 
                           dominantBaseline="central"
-                          fontSize={isMobile ? 10 : 12}
+                          fontSize={isMobile ? 12 : 14}
                           fontWeight="bold"
-                          style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.6)' }}
+                          style={{ 
+                            pointerEvents: 'none',
+                            fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'"
+                          }}
                         >
                           {(percent * 100).toFixed(0)}%
                         </text>
@@ -460,7 +463,7 @@ export default function TotalSalaries() {
           </div>
 
           {/* Department Compensation */}
-          <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
+          <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
             <h3 className="text-sm font-semibold  tracking-[0.05em] text-gray-500 mb-4">Department Compensation</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -484,7 +487,7 @@ export default function TotalSalaries() {
         </section>
 
         {/* Search and Filter Section */}
-        <section className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
+        <section className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex-1">
               <div className="relative">
@@ -514,7 +517,7 @@ export default function TotalSalaries() {
           </div>
         </section>
 
-        <section className="overflow-hidden rounded-3xl border border-gray-200 bg-white">
+        <section className="overflow-hidden rounded-3xl border border-gray-200 bg-white" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 text-left">
               <thead className="bg-gradient-to-r from-gray-50 to-gray-100 text-[0.65rem] font-semibold  tracking-[0.05em] text-gray-500 sm:text-xs">

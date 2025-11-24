@@ -204,7 +204,7 @@ export default function Dashboard() {
     <div className="flex min-h-screen flex-col bg-gray-50 text-gray-900">
       <Navbar />
       <main className="mx-auto w-full max-w-screen-2xl grow overflow-hidden px-3 py-6 sm:px-4 sm:py-8 lg:px-6 xl:px-8">
-        <div className="flex flex-col gap-6 overflow-hidden rounded-lg border border-gray-200 bg-white p-4 sm:gap-8 sm:p-6 lg:p-8">
+        <div className="flex flex-col gap-6 overflow-hidden rounded-lg border border-gray-200 bg-white p-4 sm:gap-8 sm:p-6 lg:p-8" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
         <header className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
             <p className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 sm:px-3 sm:py-1 text-[0.65rem] sm:text-xs font-semibold  tracking-[0.05em] text-gray-500">
@@ -228,7 +228,7 @@ export default function Dashboard() {
                 className="relative rounded-lg p-3 sm:p-5 overflow-hidden shadow-lg cursor-pointer transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:brightness-110"
                   style={{
                     backgroundColor: card.color,
-                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)',
                     fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'",
                   }}
               >
@@ -293,7 +293,7 @@ export default function Dashboard() {
             <article
               key={stat.label}
               className={`group flex flex-col justify-between rounded-lg border border-emerald-100 bg-emerald-50 p-3 sm:p-4 transition shadow-sm hover:shadow-md`}
-              style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'" }}
+              style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'", boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}
             >
               <header className="flex items-center justify-between mb-2">
                 <p className="text-[0.65rem] sm:text-xs font-semibold tracking-[0.05em] text-gray-700" style={{ letterSpacing: '-0.02em' }}>{stat.label}</p>
@@ -316,7 +316,7 @@ export default function Dashboard() {
         </section>
 
         <section className="grid gap-4 sm:gap-6 lg:grid-cols-[1.1fr_1fr_1fr]">
-          <div className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4 lg:p-6">
+          <div className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4 lg:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
             <h2 className="text-base sm:text-lg font-semibold">Monthly Metrics</h2>
             <div className="mt-3 sm:mt-4 -mx-2 overflow-x-auto sm:mx-0">
               <div className="inline-block min-w-full align-middle">
@@ -365,7 +365,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4 lg:p-6">
+          <div className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4 lg:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
             <h2 className="text-base sm:text-lg font-semibold">Recruitment Funnel</h2>
             <div className="mt-3 sm:mt-4 h-56 sm:h-72">
               <ResponsiveContainer width="100%" height="100%">
@@ -423,7 +423,7 @@ export default function Dashboard() {
             </ul>
           </div>
 
-          <div className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4 lg:p-6">
+          <div className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4 lg:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
             <h2 className="text-base sm:text-lg font-semibold">Pipeline Efficiency of Hiring</h2>
             <p className="mt-1 text-[0.65rem] sm:text-xs font-medium  tracking-[0.05em] text-gray-500">
               Days taken for each stage in recruitment process
@@ -472,6 +472,7 @@ export default function Dashboard() {
                 <li
                   key={stage.name}
                   className="flex items-start gap-2 sm:gap-3 rounded-lg border border-gray-200 bg-white px-3 py-2 sm:px-3.5 sm:py-3"
+                  style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}
                 >
                   <span
                     className="mt-1 h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full flex-shrink-0"
@@ -496,6 +497,7 @@ export default function Dashboard() {
             <article
               key={card.title}
               className="flex flex-col gap-1 sm:gap-1.5 lg:gap-3 rounded-lg border border-gray-200 bg-white p-2 sm:p-2.5 lg:p-4 xl:p-6"
+              style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}
             >
               <span className={`inline-flex w-max items-center rounded-full border border-indigo-200 bg-indigo-50 px-1.5 py-0.5 sm:px-2 sm:py-0.5 lg:px-3 lg:py-1 text-[0.5rem] sm:text-[0.65rem] lg:text-xs font-semibold  tracking-[0.15em] sm:tracking-[0.05em] text-indigo-700 leading-tight`}>
                 {card.title}

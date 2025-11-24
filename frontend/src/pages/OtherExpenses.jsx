@@ -112,7 +112,7 @@ export default function OtherExpenses() {
                 </NavLink>
               </div>
             </div>
-            <div className="grid gap-3 rounded-2xl border border-gray-200 bg-white p-4 sm:gap-4 sm:p-5">
+            <div className="grid gap-3 rounded-2xl border border-gray-200 bg-white p-4 sm:gap-4 sm:p-5" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
               {[{ label: 'Total tracked months', value: `${expenseData.length}`, detail: 'Rolling financial view', color: employeeColors[0] }, { label: 'Current quarter spend', value: formatCurrency(totalExpenses), detail: 'Rent + Light Bill + Other', color: employeeColors[1] }, { label: 'Light Bill variance', value: '+6.8%', detail: 'Compared to previous quarter', color: employeeColors[2] }].map((stat, idx) => {
                 const bgColor = `${stat.color}15`;
                 const borderColor = `${stat.color}40`;
@@ -262,7 +262,7 @@ export default function OtherExpenses() {
           })}
         </section>
 
-        <section className="overflow-hidden rounded-3xl border border-gray-200 bg-white">
+        <section className="overflow-hidden rounded-3xl border border-gray-200 bg-white" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 text-left">
               <thead className="bg-gray-50 text-[0.65rem] font-semibold  tracking-[0.05em] text-gray-500 sm:text-xs">

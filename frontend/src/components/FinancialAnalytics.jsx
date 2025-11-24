@@ -167,7 +167,7 @@ export default function FinancialAnalytics() {
     setSelectedExpense(expense);
   };
   return (
-    <section className="rounded-3xl border border-gray-200 bg-white shadow-sm">
+    <section className="rounded-3xl border border-gray-200 bg-white shadow-sm" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
       <header className="flex flex-col gap-2 border-b border-gray-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-[0.65rem] font-semibold  tracking-[0.05em] text-gray-500">Analytics · Summary</p>
@@ -181,7 +181,7 @@ export default function FinancialAnalytics() {
       </header>
 
       <div className="grid gap-4 px-4 py-4 lg:grid-cols-[2.1fr_0.9fr]">
-        <article className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
+        <article className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-col">
               <h3 className="text-xs sm:text-sm font-semibold  tracking-[0.05em] text-gray-500">Monthly Income & Expenses</h3>
@@ -327,7 +327,7 @@ export default function FinancialAnalytics() {
       </div>
 
       <div className="grid gap-4 border-t border-gray-200 px-4 py-4 lg:grid-cols-3">
-        <article className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
+        <article className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-xs sm:text-sm font-semibold  tracking-[0.05em] text-gray-500">Income Overview</h3>
             <span className="rounded-full border border-purple-200 bg-purple-50 px-2.5 py-1 text-[0.6rem] sm:text-xs  tracking-[0.05em] text-purple-700">
@@ -388,7 +388,7 @@ export default function FinancialAnalytics() {
           </div>
         </article>
 
-        <article className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 overflow-visible">
+        <article className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 overflow-visible" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-xs sm:text-sm font-semibold  tracking-[0.05em] text-gray-500">Expense Analysis</h3>
             <span className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[0.6rem] sm:text-xs  tracking-[0.05em] text-gray-700">
@@ -422,7 +422,7 @@ export default function FinancialAnalytics() {
                     if (!item) return null;
                     
                     return (
-                      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xl" style={{ minWidth: "220px" }}>
+                      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xl" style={{ minWidth: "220px", boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
                         <div className="space-y-3">
                           <div className="font-semibold text-lg border-b border-gray-200 pb-2" style={{ color: item.color }}>
                             {item.name}
@@ -527,7 +527,7 @@ export default function FinancialAnalytics() {
           </div>
         </article>
 
-        <article className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
+        <article className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-xs sm:text-sm font-semibold  tracking-[0.05em] text-gray-500">Financial Forecast</h3>
             <span className="rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-[0.6rem] sm:text-xs  tracking-[0.05em] text-blue-700">
@@ -622,7 +622,7 @@ export default function FinancialAnalytics() {
                     const net = monthData ? monthData.net : 0;
                     
                     return (
-                      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xl" style={{ minWidth: "220px" }}>
+                      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xl" style={{ minWidth: "220px", boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
                         <div className="space-y-2">
                           <div className="font-semibold text-sm border-b border-gray-200 pb-2 text-gray-900">
                             Month: {label}

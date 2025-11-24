@@ -235,7 +235,7 @@ export default function Payroll() {
                 </NavLink>
               </div>
             </div>
-            <div className="grid gap-3 rounded-2xl border border-gray-200 bg-white p-4 sm:gap-4 sm:p-5">
+            <div className="grid gap-3 rounded-2xl border border-gray-200 bg-white p-4 sm:gap-4 sm:p-5" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
               {[
                 { label: 'Monthly payroll', value: formatCurrency(totalMonthly), detail: '+4.2% vs last cycle', bgColor: '#FEF3C7', textColor: '#F59E0B' },
                 { label: 'Annualised payroll', value: formatCurrency(totalAnnual), detail: 'Including bonuses & perks', bgColor: '#FEE2E2', textColor: '#EF4444' },
@@ -380,7 +380,7 @@ export default function Payroll() {
         {/* Charts Section */}
         <section className="grid gap-4 lg:grid-cols-2">
           {/* Department Salary Distribution */}
-          <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
+          <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
             <h3 className="text-sm font-semibold  tracking-[0.05em] text-gray-500 mb-4">Department Salary Distribution</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -403,7 +403,7 @@ export default function Payroll() {
           </div>
 
           {/* Salary Range Distribution */}
-          <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
+          <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
             <h3 className="text-xs sm:text-sm font-semibold  tracking-[0.05em] text-gray-500 mb-3 sm:mb-4">Salary Range Distribution</h3>
             <div className="h-64 sm:h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -458,7 +458,7 @@ export default function Payroll() {
         </section>
 
         {/* Search and Filter Section */}
-        <section className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
+        <section className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex-1">
               <div className="relative">
@@ -488,7 +488,7 @@ export default function Payroll() {
           </div>
         </section>
 
-        <section className="overflow-hidden rounded-3xl border border-gray-200 bg-white">
+        <section className="overflow-hidden rounded-3xl border border-gray-200 bg-white" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 text-left">
               <thead className="bg-gradient-to-r from-gray-50 to-gray-100 text-[0.65rem] font-semibold  tracking-[0.05em] text-gray-500 sm:text-xs">

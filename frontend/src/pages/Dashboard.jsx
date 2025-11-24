@@ -260,7 +260,7 @@ export default function Dashboard() {
                   className="relative rounded-lg p-3 sm:p-5 overflow-hidden shadow-lg cursor-pointer transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:brightness-110"
                   style={{
                     backgroundColor: card.color,
-                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)',
                     fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'",
                   }}
                 >
@@ -322,7 +322,7 @@ export default function Dashboard() {
 
           {/* REVENUE DISTRIBUTION */}
           <section className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-[1fr_1fr]">
-            <article className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4 lg:p-4">
+            <article className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4 lg:p-4" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
               <div className="mb-2 sm:mb-3 lg:mb-3">
                 <h3 className="text-xs sm:text-sm font-semibold tracking-[0.05em] text-gray-500 mb-1" style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'" }}>Revenue Distribution</h3>
                 <p className="text-[0.65rem] sm:text-xs text-gray-500">Category wise revenue breakdown across all services</p>
@@ -434,7 +434,7 @@ export default function Dashboard() {
             </article>
 
             {/* EMPLOYEE DISTRIBUTION */}
-            <article className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4 lg:p-4">
+            <article className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4 lg:p-4" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
               <div className="mb-2 sm:mb-3 lg:mb-3">
                 <h3 className="text-xs sm:text-sm font-semibold tracking-[0.05em] text-gray-500 mb-1" style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'" }}>Employee Distribution</h3>
                 <p className="text-[0.65rem] sm:text-xs text-gray-500">Department-wise workforce allocation across Pravara Health Care</p>
@@ -548,7 +548,7 @@ export default function Dashboard() {
 
           {/* TOTAL SALES + SUMMARY */}
           <section className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-[2fr_1fr]">
-            <article className="rounded-lg border border-gray-200 bg-white p-4 sm:p-5 lg:p-6">
+            <article className="rounded-lg border border-gray-200 bg-white p-4 sm:p-5 lg:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div className="flex-1 min-w-0">
                   <p className="text-xs sm:text-sm font-semibold tracking-[0.05em] text-gray-500" style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'" }}>Total Sales</p>
@@ -585,13 +585,13 @@ export default function Dashboard() {
               </div>
             </article>
 
-            <article className="rounded-lg border border-gray-200 bg-white p-4 sm:p-5 lg:p-6">
+            <article className="rounded-lg border border-gray-200 bg-white p-4 sm:p-5 lg:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
               <p className="text-xs sm:text-sm font-semibold tracking-[0.05em] text-gray-500" style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'" }}>Summary</p>
               <p className="mt-1 sm:mt-2 text-[0.65rem] sm:text-xs text-gray-500">Jan 1, 2023 – Jun 30, 2023</p>
 
               <div className="mt-4 sm:mt-6 grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
                 {summaryStats.map((stat) => (
-                  <article key={stat.label} className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4">
+                  <article key={stat.label} className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
                     <div className="flex items-start sm:items-center justify-between gap-2">
                       <p className="text-[0.65rem] sm:text-xs font-semibold tracking-[0.05em] text-gray-500" style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'" }}>{stat.label}</p>
                       <span className={`text-[0.65rem] sm:text-xs font-semibold text-emerald-600`}>{stat.trend}</span>
@@ -610,7 +610,7 @@ export default function Dashboard() {
           <section className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-[1.1fr_1fr]">
             
             {/* SALES FUNNEL */}
-            <article className="rounded-lg border border-gray-200 bg-white p-4 sm:p-5 lg:p-6">
+            <article className="rounded-lg border border-gray-200 bg-white p-4 sm:p-5 lg:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div className="flex-1 min-w-0">
                   <p className="text-xs sm:text-sm font-semibold tracking-[0.05em] text-gray-500" style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'" }}>Sales Funnel</p>
@@ -652,7 +652,7 @@ export default function Dashboard() {
 
               <div className="mt-4 sm:mt-6 grid gap-2 sm:gap-4 grid-cols-2 sm:grid-cols-5">
                 {funnelStages.map((stage) => (
-                  <div key={stage.step} className="flex flex-col gap-1 rounded-md border border-gray-200 bg-white p-2 sm:p-3">
+                  <div key={stage.step} className="flex flex-col gap-1 rounded-md border border-gray-200 bg-white p-2 sm:p-3" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
                     <p className="text-[0.6rem] sm:text-[10px] lg:text-xs font-semibold tracking-[0.05em] text-gray-500 truncate" style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'" }}>{stage.step}</p>
                     <p className="text-base sm:text-lg font-semibold">{stage.value}</p>
                     <p className="text-[0.6rem] sm:text-[0.65rem] text-gray-500">{stage.conversion}</p>
@@ -663,7 +663,7 @@ export default function Dashboard() {
             </article>
 
             {/* REVENUE VARIANCE CHART */}
-            <article className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4 lg:p-6">
+            <article className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4 lg:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div className="flex-1 min-w-0">
                   <p className="text-xs sm:text-sm font-semibold tracking-[0.05em] text-gray-500 break-words" style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'" }}>Revenue % Variance to Budget by Month and Executive</p>
@@ -737,7 +737,7 @@ export default function Dashboard() {
 
           {/* RETENTION + ACTION CENTER */}
           <section className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-[2fr_1fr]">
-            <article className="rounded-lg border border-gray-200 bg-white p-4 sm:p-5 lg:p-6">
+            <article className="rounded-lg border border-gray-200 bg-white p-4 sm:p-5 lg:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div className="flex-1 min-w-0">
                   <p className="text-xs sm:text-sm font-semibold tracking-[0.05em] text-gray-500" style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'" }}>Customer Retention</p>
@@ -802,7 +802,7 @@ export default function Dashboard() {
               </div>
             </article>
 
-            <article className="flex flex-col gap-3 sm:gap-4 rounded-lg border border-gray-200 bg-white p-4 sm:p-5 lg:p-6">
+            <article className="flex flex-col gap-3 sm:gap-4 rounded-lg border border-gray-200 bg-white p-4 sm:p-5 lg:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
               <div className="flex items-start sm:items-center justify-between gap-2">
                 <div className="flex-1 min-w-0">
                   <p className="text-xs sm:text-sm font-semibold tracking-[0.05em] text-gray-500" style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'" }}>Action Center</p>
@@ -816,6 +816,7 @@ export default function Dashboard() {
                   <li
                     key={item.title}
                     className="rounded-lg border border-gray-200 bg-white px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm font-medium"
+                    style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}
                   >
                     <p>{item.title}</p>
                     <div className="mt-1.5 sm:mt-2 flex items-center justify-between text-[0.65rem] sm:text-xs font-semibold tracking-[0.05em] text-gray-500" style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'" }}>
