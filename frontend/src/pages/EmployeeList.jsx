@@ -267,7 +267,7 @@ export default function Dashboard() {
                     {card.value}
                   </p>
                   <h2 
-                    className="text-xs sm:text-sm font-medium text-black mb-1 sm:mb-2 transition-opacity duration-300"
+                    className="text-sm sm:text-base font-medium text-black mb-1 sm:mb-2 transition-opacity duration-300"
                     style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'" }}
                   >
                     {card.title}
@@ -317,7 +317,7 @@ export default function Dashboard() {
 
         <section className="grid gap-4 sm:gap-6 lg:grid-cols-[1.1fr_1fr_1fr]">
           <div className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4 lg:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
-            <h2 className="text-base sm:text-lg font-bold text-black">Monthly Metrics</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-black">Monthly Metrics</h2>
             <div className="mt-3 sm:mt-4 -mx-2 overflow-x-auto sm:mx-0">
               <div className="inline-block min-w-full align-middle">
                 <div className="overflow-hidden rounded-xl border border-gray-200">
@@ -366,7 +366,7 @@ export default function Dashboard() {
           </div>
 
           <div className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4 lg:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
-            <h2 className="text-base sm:text-lg font-bold text-black">Recruitment Funnel</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-black">Recruitment Funnel</h2>
             <div className="mt-3 sm:mt-4 h-56 sm:h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <FunnelChart>
@@ -424,7 +424,7 @@ export default function Dashboard() {
           </div>
 
           <div className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4 lg:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
-            <h2 className="text-base sm:text-lg font-bold text-black">Pipeline Efficiency of Hiring</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-black">Pipeline Efficiency of Hiring</h2>
             <p className="mt-1 text-[0.65rem] sm:text-xs font-medium  tracking-[0.05em] text-gray-500">
               Days taken for each stage in recruitment process
             </p>

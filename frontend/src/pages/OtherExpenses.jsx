@@ -241,7 +241,7 @@ export default function OtherExpenses() {
                   {item.value}
                 </p>
                   <h2 
-                    className="text-xs sm:text-sm font-medium text-black mb-1 sm:mb-2 transition-opacity duration-300"
+                    className="text-sm sm:text-base font-medium text-black mb-1 sm:mb-2 transition-opacity duration-300"
                     style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'" }}
                   >
                     {item.label}
