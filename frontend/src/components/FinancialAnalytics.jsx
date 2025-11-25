@@ -184,7 +184,7 @@ export default function FinancialAnalytics() {
         <article className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-col">
-              <h3 className="text-xs sm:text-sm font-bold  tracking-[0.05em] text-gray-500">Monthly Income & Expenses</h3>
+              <h3 className="text-xs sm:text-sm font-bold  tracking-[0.05em] text-black">Monthly Income & Expenses</h3>
               <p className="text-[0.65rem] sm:text-xs text-gray-500">Income vs expenses · Jan - Dec 2024</p>
             </div>
             <span className="rounded-full border border-blue-200 bg-blue-50 px-2.5 sm:px-3 py-1 text-[0.65rem] sm:text-xs font-semibold text-blue-700 whitespace-nowrap">
@@ -329,7 +329,7 @@ export default function FinancialAnalytics() {
       <div className="grid gap-4 border-t border-gray-200 px-4 py-4 lg:grid-cols-3">
         <article className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xs sm:text-sm font-bold  tracking-[0.05em] text-gray-500">Income Overview</h3>
+            <h3 className="text-xs sm:text-sm font-bold  tracking-[0.05em] text-black">Income Overview</h3>
             <span className="rounded-full border border-purple-200 bg-purple-50 px-2.5 py-1 text-[0.6rem] sm:text-xs  tracking-[0.05em] text-purple-700">
               3 Sources
             </span>
@@ -390,7 +390,7 @@ export default function FinancialAnalytics() {
 
         <article className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 overflow-visible" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xs sm:text-sm font-bold  tracking-[0.05em] text-gray-500">Expense Analysis</h3>
+            <h3 className="text-xs sm:text-sm font-bold  tracking-[0.05em] text-black">Expense Analysis</h3>
             <span className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[0.6rem] sm:text-xs  tracking-[0.05em] text-gray-700">
               {expenseTotalTransactions} Transactions
             </span>
@@ -529,7 +529,7 @@ export default function FinancialAnalytics() {
 
         <article className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xs sm:text-sm font-bold  tracking-[0.05em] text-gray-500">Financial Forecast</h3>
+            <h3 className="text-xs sm:text-sm font-bold  tracking-[0.05em] text-black">Financial Forecast</h3>
             <span className="rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-[0.6rem] sm:text-xs  tracking-[0.05em] text-blue-700">
               8-Month Projection
             </span>

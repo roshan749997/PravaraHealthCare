@@ -356,7 +356,7 @@ export default function Payroll() {
                   {item.value}
                 </p>
                   <h2 
-                    className="text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-2 transition-opacity duration-300"
+                    className="text-xs sm:text-sm font-medium text-black mb-1 sm:mb-2 transition-opacity duration-300"
                     style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'" }}
                   >
                     {item.label}
@@ -381,7 +381,7 @@ export default function Payroll() {
         <section className="grid gap-4 lg:grid-cols-2">
           {/* Department Salary Distribution */}
           <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
-            <h3 className="text-sm font-bold  tracking-[0.05em] text-gray-500 mb-4">Department Salary Distribution</h3>
+            <h3 className="text-sm font-bold  tracking-[0.05em] text-black mb-4">Department Salary Distribution</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={departmentChartData}>
@@ -404,7 +404,7 @@ export default function Payroll() {
 
           {/* Salary Range Distribution */}
           <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
-            <h3 className="text-xs sm:text-sm font-bold  tracking-[0.05em] text-gray-500 mb-3 sm:mb-4">Salary Range Distribution</h3>
+            <h3 className="text-xs sm:text-sm font-bold  tracking-[0.05em] text-black mb-3 sm:mb-4">Salary Range Distribution</h3>
             <div className="h-64 sm:h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
