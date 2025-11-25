@@ -128,7 +128,7 @@ export default function OtherExpenses() {
                       borderColor: borderColor,
                     }}
                   >
-                    <p className="text-[0.6rem] font-medium  tracking-[0.05em] text-gray-500 sm:text-xs">
+                    <p className="text-[0.6rem] font-bold  tracking-[0.05em] text-gray-500 sm:text-xs">
                       {stat.label}
                     </p>
                     <p 
@@ -198,14 +198,14 @@ export default function OtherExpenses() {
           ].map((item) => {
             return (
               <article
-                key={item.label}
+                key={item.label} 
                 className="relative rounded-lg p-3 sm:p-5 overflow-hidden shadow-lg cursor-pointer transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:brightness-110"
-                  style={{
+                style={{
                     backgroundColor: item.color,
                     boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
                     fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'",
-                  }}
-              >
+                    }}
+                  >
                 {/* Large background icon */}
                 <div 
                   className="absolute right-0 top-0 pointer-events-none"
@@ -236,10 +236,10 @@ export default function OtherExpenses() {
                       letterSpacing: '-0.03em',
                       fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'",
                       fontWeight: 700
-                    }}
-                  >
-                    {item.value}
-                  </p>
+                  }}
+                >
+                  {item.value}
+                </p>
                   <h2 
                     className="text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-2 transition-opacity duration-300"
                     style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'" }}
@@ -256,7 +256,7 @@ export default function OtherExpenses() {
                     <span className="transition-transform duration-300 hover:scale-125">{item.helper.includes('+') ? '↑' : '↓'}</span>
                     {item.helper}
                   </p>
-                </div>
+              </div>
               </article>
             );
           })}

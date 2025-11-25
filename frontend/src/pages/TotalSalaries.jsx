@@ -347,7 +347,7 @@ export default function TotalSalaries() {
               <article
                 key={cardData.label}
                 className="relative rounded-lg p-3 sm:p-5 overflow-hidden shadow-lg cursor-pointer transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:brightness-110"
-                  style={{
+                style={{
                     backgroundColor: cardData.color,
                     boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
                     fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'",
@@ -379,7 +379,7 @@ export default function TotalSalaries() {
                   </div>
                   <p 
                     className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-1 transition-transform duration-300 hover:scale-105" 
-                    style={{ 
+                    style={{
                       letterSpacing: '-0.03em',
                       fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'",
                       fontWeight: 700
@@ -393,17 +393,17 @@ export default function TotalSalaries() {
                   >
                     {cardData.label}
                   </h2>
-                  <p 
+                <p 
                     className="text-xs sm:text-sm font-normal text-white/80 flex items-center gap-1 transition-transform duration-300" 
-                    style={{ 
+                  style={{
                       letterSpacing: '0',
                       fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'"
-                    }}
-                  >
+                  }}
+                >
                     <span className="transition-transform duration-300 hover:scale-125">{cardData.helper.includes('+') ? '↑' : ''}</span>
                     {cardData.helper}
-                  </p>
-                </div>
+                </p>
+              </div>
               </article>
             );
           })}
@@ -413,7 +413,7 @@ export default function TotalSalaries() {
         <section className="grid gap-4 lg:grid-cols-2">
           {/* Compensation Breakdown */}
           <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
-            <h3 className="text-sm font-semibold  tracking-[0.05em] text-gray-500 mb-4">Compensation Breakdown</h3>
+            <h3 className="text-sm font-bold  tracking-[0.05em] text-gray-500 mb-4">Compensation Breakdown</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -464,7 +464,7 @@ export default function TotalSalaries() {
 
           {/* Department Compensation */}
           <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
-            <h3 className="text-sm font-semibold  tracking-[0.05em] text-gray-500 mb-4">Department Compensation</h3>
+            <h3 className="text-sm font-bold  tracking-[0.05em] text-gray-500 mb-4">Department Compensation</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={departmentChartData}>

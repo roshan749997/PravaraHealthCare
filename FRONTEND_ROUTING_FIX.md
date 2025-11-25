@@ -187,3 +187,4 @@ After deployment, open browser console and check:
    - They can configure redirects in dashboard
 
 
+

@@ -210,7 +210,7 @@ export default function Dashboard() {
             <p className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 sm:px-3 sm:py-1 text-[0.65rem] sm:text-xs font-semibold  tracking-[0.05em] text-gray-500">
               Overview
             </p>
-            <h1 className="mt-3 sm:mt-4 text-xl sm:text-2xl lg:text-3xl font-semibold">
+            <h1 className="mt-3 sm:mt-4 text-xl sm:text-2xl lg:text-3xl font-bold">
               Monthly Hiring Dashboard with Recruitment Funnel
             </h1>
           </div>
@@ -296,7 +296,7 @@ export default function Dashboard() {
               style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'", boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}
             >
               <header className="flex items-center justify-between mb-2">
-                <p className="text-[0.65rem] sm:text-xs font-semibold tracking-[0.05em] text-gray-700" style={{ letterSpacing: '-0.02em' }}>{stat.label}</p>
+                <p className="text-[0.65rem] sm:text-xs font-bold tracking-[0.05em] text-gray-700" style={{ letterSpacing: '-0.02em' }}>{stat.label}</p>
                 <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-100 px-1.5 py-0.5 text-[0.55rem] sm:text-[0.6rem] font-semibold text-gray-800 transition" style={{ letterSpacing: '-0.02em' }}>
                   {stat.change}
                 </span>
@@ -317,7 +317,7 @@ export default function Dashboard() {
 
         <section className="grid gap-4 sm:gap-6 lg:grid-cols-[1.1fr_1fr_1fr]">
           <div className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4 lg:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
-            <h2 className="text-base sm:text-lg font-semibold">Monthly Metrics</h2>
+            <h2 className="text-base sm:text-lg font-bold">Monthly Metrics</h2>
             <div className="mt-3 sm:mt-4 -mx-2 overflow-x-auto sm:mx-0">
               <div className="inline-block min-w-full align-middle">
                 <div className="overflow-hidden rounded-xl border border-gray-200">
@@ -366,7 +366,7 @@ export default function Dashboard() {
           </div>
 
           <div className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4 lg:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
-            <h2 className="text-base sm:text-lg font-semibold">Recruitment Funnel</h2>
+            <h2 className="text-base sm:text-lg font-bold">Recruitment Funnel</h2>
             <div className="mt-3 sm:mt-4 h-56 sm:h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <FunnelChart>
@@ -413,7 +413,7 @@ export default function Dashboard() {
             <ul className="mt-3 sm:mt-4 space-y-2 sm:space-y-3">
               {funnelInsights.map((item, index) => (
                 <li key={item.stage} className="rounded-lg border border-gray-200 bg-white px-3 py-2 sm:px-4 sm:py-3">
-                  <p className="text-[0.65rem] sm:text-xs font-semibold  tracking-[0.05em] text-gray-500">{item.stage}</p>
+                  <p className="text-[0.65rem] sm:text-xs font-bold  tracking-[0.05em] text-gray-500">{item.stage}</p>
                   <div className="mt-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0 text-xs sm:text-sm">
                     <span className="font-semibold" style={{ color: funnelColors[index % funnelColors.length] }}>{item.drop}</span>
                     <span className="text-gray-600">{item.note}</span>
@@ -424,7 +424,7 @@ export default function Dashboard() {
           </div>
 
           <div className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4 lg:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
-            <h2 className="text-base sm:text-lg font-semibold">Pipeline Efficiency of Hiring</h2>
+            <h2 className="text-base sm:text-lg font-bold">Pipeline Efficiency of Hiring</h2>
             <p className="mt-1 text-[0.65rem] sm:text-xs font-medium  tracking-[0.05em] text-gray-500">
               Days taken for each stage in recruitment process
             </p>

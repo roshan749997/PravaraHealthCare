@@ -264,7 +264,7 @@ export default function Payroll() {
           {[
             { 
               label: 'Average monthly pay', 
-              value: formatCurrency(averageMonthly),
+              value: formatCurrency(averageMonthly), 
               helper: '+4.2% vs last month',
               badge: 'On Track',
               color: '#EC4899', // Pink
@@ -276,7 +276,7 @@ export default function Payroll() {
             }, 
             { 
               label: 'Median salary band', 
-              value: '₹72K',
+              value: '₹72K', 
               helper: '+2.1% vs benchmark',
               badge: 'Growing',
               color: '#6366F1', // Indigo
@@ -288,7 +288,7 @@ export default function Payroll() {
             }, 
             { 
               label: 'Variable payout fund', 
-              value: '₹2.4L',
+              value: '₹2.4L', 
               helper: '+8.5% vs target',
               badge: 'Above target',
               color: '#14B8A6', // Teal
@@ -300,7 +300,7 @@ export default function Payroll() {
             }, 
             { 
               label: 'Payroll completion', 
-              value: '92%',
+              value: '92%', 
               helper: '+2% vs last cycle',
               badge: 'Controlled',
               color: '#F97316', // Orange
@@ -313,14 +313,14 @@ export default function Payroll() {
           ].map((item) => {
             return (
               <article
-                key={item.label}
+                key={item.label} 
                 className="relative rounded-lg p-3 sm:p-5 overflow-hidden shadow-lg cursor-pointer transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:brightness-110"
-                  style={{
+                style={{
                     backgroundColor: item.color,
                     boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
                     fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'",
-                  }}
-              >
+                    }}
+                  >
                 {/* Large background icon */}
                 <div 
                   className="absolute right-0 top-0 pointer-events-none"
@@ -351,10 +351,10 @@ export default function Payroll() {
                       letterSpacing: '-0.03em',
                       fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'",
                       fontWeight: 700
-                    }}
-                  >
-                    {item.value}
-                  </p>
+                  }}
+                >
+                  {item.value}
+                </p>
                   <h2 
                     className="text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-2 transition-opacity duration-300"
                     style={{ fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'" }}
@@ -371,7 +371,7 @@ export default function Payroll() {
                     <span className="transition-transform duration-300 hover:scale-125">{item.helper.includes('+') ? '↑' : '↓'}</span>
                     {item.helper}
                   </p>
-                </div>
+              </div>
               </article>
             );
           })}
@@ -381,7 +381,7 @@ export default function Payroll() {
         <section className="grid gap-4 lg:grid-cols-2">
           {/* Department Salary Distribution */}
           <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
-            <h3 className="text-sm font-semibold  tracking-[0.05em] text-gray-500 mb-4">Department Salary Distribution</h3>
+            <h3 className="text-sm font-bold  tracking-[0.05em] text-gray-500 mb-4">Department Salary Distribution</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={departmentChartData}>
@@ -404,7 +404,7 @@ export default function Payroll() {
 
           {/* Salary Range Distribution */}
           <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)' }}>
-            <h3 className="text-xs sm:text-sm font-semibold  tracking-[0.05em] text-gray-500 mb-3 sm:mb-4">Salary Range Distribution</h3>
+            <h3 className="text-xs sm:text-sm font-bold  tracking-[0.05em] text-gray-500 mb-3 sm:mb-4">Salary Range Distribution</h3>
             <div className="h-64 sm:h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -413,23 +413,26 @@ export default function Payroll() {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ range, count, cx, cy, midAngle, innerRadius, outerRadius }) => {
+                    label={({ count, cx, cy, midAngle, innerRadius, outerRadius }) => {
                       const RADIAN = Math.PI / 180;
-                      const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+                      const radius = outerRadius + (isMobile ? 20 : 25);
                       const x = cx + radius * Math.cos(-midAngle * RADIAN);
                       const y = cy + radius * Math.sin(-midAngle * RADIAN);
                       return (
                         <text 
                           x={x} 
                           y={y} 
-                          fill="white" 
-                          textAnchor={x > cx ? 'start' : 'end'} 
+                          fill="#374151" 
+                          textAnchor="middle" 
                           dominantBaseline="central"
-                          fontSize={isMobile ? 10 : 12}
+                          fontSize={isMobile ? 12 : 14}
                           fontWeight="bold"
-                          style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.6)' }}
+                          style={{ 
+                            pointerEvents: 'none',
+                            fontFamily: "'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'"
+                          }}
                         >
-                          {`${range}: ${count}`}
+                          {count}
                         </text>
                       );
                     }}
@@ -437,6 +440,7 @@ export default function Payroll() {
                     innerRadius={isMobile ? 0 : 0}
                     fill="#8884d8"
                     dataKey="count"
+                    nameKey="range"
                     paddingAngle={3}
                   >
                     {salaryRangeData.map((entry, index) => (
@@ -444,12 +448,22 @@ export default function Payroll() {
                     ))}
                   </Pie>
                   <Tooltip 
-                    formatter={(value) => `${value} employees`}
+                    formatter={(value, name, props) => [`${value} employees`, props.payload.range]}
+                    labelFormatter={(label) => `Salary Range: ${label}`}
                     contentStyle={{ borderRadius: '8px', border: '1px solid #E5E7EB', fontSize: isMobile ? '12px' : '14px' }}
                   />
                   <Legend 
                     wrapperStyle={{ fontSize: isMobile ? '11px' : '12px', paddingTop: '10px' }}
-                    iconType="circle"
+                    iconType="square"
+                    formatter={(value, entry) => {
+                      return entry.payload?.range || value;
+                    }}
+                    payload={salaryRangeData.map((item, index) => ({
+                      value: item.range,
+                      type: 'square',
+                      id: `cell-${index}`,
+                      color: item.color
+                    }))}
                   />
                 </PieChart>
               </ResponsiveContainer>
